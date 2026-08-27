@@ -7,6 +7,7 @@ import com.gestion_de_seguridad.acceso.domain.event.VisitaCerradaPorSistemaEvent
 import com.gestion_de_seguridad.acceso.domain.event.VisitaCreadaEvent;
 import com.gestion_de_seguridad.acceso.domain.event.VisitaRechazadaEvent;
 import com.gestion_de_seguridad.auditoria.domain.port.in.RegistrarAuditoriaUseCase;
+import com.gestion_de_seguridad.incidentes.domain.event.IncidenteReportadoEvent;
 import com.gestion_de_seguridad.personas.domain.event.PersonaBloqueadaEvent;
 import com.gestion_de_seguridad.personas.domain.event.PersonaRegistradaEvent;
 import com.gestion_de_seguridad.shared.domain.event.EventPublisher;
@@ -59,5 +60,9 @@ public class AuditoriaEventListener {
 
         publisher.suscribir(PersonaBloqueadaEvent.class, e ->
                 auditoria.registrar(null, "BLOQUEAR_PERSONA", "Persona", e.entidadId(), null));
+
+        publisher.suscribir(IncidenteReportadoEvent.class, e ->
+                auditoria.registrar(null, "REPORTAR_INCIDENTE", "Incidente", e.entidadId(),
+                        "Severidad: " + e.getSeveridad()));
     }
 }
