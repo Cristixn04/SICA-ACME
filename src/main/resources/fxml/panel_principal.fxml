@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Esqueleto del panel principal: barra superior + sidebar + contenido.
+     Los items del sidebar (por rol), el avatar y la campana los puebla
+     el controlador PanelPrincipal en tiempo de ejecucion. -->
+<BorderPane fx:id="raiz" xmlns:fx="http://javafx.com/fxml/1">
+
+    <top>
+        <HBox fx:id="barraSuperior" styleClass="barra-superior" alignment="CENTER_RIGHT" spacing="14">
+            <Label styleClass="acme-titulo-medio" text="SICA"/>
+            <Region fx:id="spacerBarra" HBox.hgrow="ALWAYS"/>
+            <StackPane fx:id="campanaSlot"/>
+            <MenuButton fx:id="usuarioMenu" styleClass="btn-gris"/>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="220" spacing="6">
+            <padding>
+                <Insets top="16" right="10" bottom="16" left="10"/>
+            </padding>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contenido"/>
+    </center>
+</BorderPane>

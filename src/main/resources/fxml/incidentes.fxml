@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Gestion de Incidentes.
+     La grilla de tarjetas se llena dinamicamente en el controlador
+     (carga en hilo de fondo para no congelar la UI). -->
+<VBox fx:id="raiz" spacing="14" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label styleClass="acme-titulo" text="Gestión de Incidentes"/>
+
+    <HBox fx:id="barra" spacing="12" alignment="CENTER_LEFT">
+        <Button fx:id="btnReportar" styleClass="btn-acme" text="＋ Reportar Incidente" onAction="#onReportar"/>
+    </HBox>
+
+    <ScrollPane fx:id="scroll" styleClass="scroll-pane" fitToWidth="true" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="grilla" hgap="14" vgap="14">
+            <padding>
+                <Insets top="8" right="8" bottom="8" left="8"/>
+            </padding>
+        </FlowPane>
+    </ScrollPane>
+</VBox>

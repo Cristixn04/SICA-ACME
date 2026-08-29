@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+
+<!-- Pantalla Recuperar Contraseña.
+     El candado se dibuja en FXML y el controlador le aplica el pulso
+     animado; el fondo blueprint se inyecta programaticamente. -->
+<StackPane fx:id="raiz" alignment="CENTER" xmlns:fx="http://javafx.com/fxml/1">
+
+    <VBox styleClass="tarjeta" alignment="CENTER" spacing="16"
+          maxWidth="430">
+        <padding>
+            <Insets top="28" right="28" bottom="28" left="28"/>
+        </padding>
+
+        <StackPane fx:id="logoSica"/>
+
+        <VBox alignment="CENTER">
+            <Circle fx:id="argolla" radius="16" fill="TRANSPARENT"
+                    stroke="#f28c28" strokeType="OUTSIDE" strokeWidth="6" layoutY="-16"/>
+            <Rectangle width="60" height="46" arcWidth="18" arcHeight="18"
+                       fill="#f28c28" stroke="#e23c2e" strokeType="OUTSIDE" strokeWidth="3"/>
+        </VBox>
+
+        <Label styleClass="acme-titulo-chico" text="Recuperar Contraseña"/>
+
+        <Label styleClass="texto-muted" wrapText="true" maxWidth="340"
+               textAlignment="CENTER" alignment="CENTER"
+               text="Ingrese su correo electrónico corporativo para enviarle un enlace de recuperación."/>
+
+        <HBox styleClass="campo-caja" alignment="CENTER_LEFT" maxWidth="340">
+            <Label styleClass="campo-icono" text="✉️"/>
+            <TextField fx:id="campoEmail" styleClass="campo-plano"
+                       promptText="Correo electrónico corporativo..." HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <Label fx:id="mensaje" styleClass="texto-exito" visible="false" wrapText="true" maxWidth="340"/>
+
+        <Button fx:id="btnEnviar" styleClass="btn-acme" text="Enviar Enlace de Recuperación"
+                maxWidth="280" prefWidth="280" onAction="#onEnviar"/>
+
+        <Label fx:id="volver" styleClass="link" text="Volver al inicio de sesión"/>
+    </VBox>
+</StackPane>

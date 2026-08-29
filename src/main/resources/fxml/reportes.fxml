@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="raiz" spacing="14" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets top="18" right="18" bottom="18" left="18"/>
+    </padding>
+
+    <!-- Barra Superior -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <VBox spacing="2">
+            <Label styleClass="acme-titulo" text="Reportes, Métricas y Evacuación"/>
+            <Label styleClass="acme-subtitulo" text="Panel analítico de afluencia, seguridad y trazabilidad"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="8" alignment="CENTER_RIGHT">
+            <Button fx:id="btnExportarCsv" styleClass="btn-verde" text="📋 Exportar Evacuación (CSV)" onAction="#onExportarCsv"/>
+            <Button fx:id="btnRefrescar" styleClass="btn-gris" text="🔄 Actualizar" onAction="#onRefrescar"/>
+        </HBox>
+    </HBox>
+
+    <!-- Tarjetas de Métricas Rápidas -->
+    <FlowPane fx:id="metricas" hgap="14" vgap="14">
+        <padding>
+            <Insets top="4" right="4" bottom="4" left="4"/>
+        </padding>
+    </FlowPane>
+
+    <!-- Pestañas de Detalle -->
+    <TabPane styleClass="tabla" VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE">
+        <!-- Pestaña 1: Lista de Evacuacion en Tiempo Real -->
+        <Tab text="🚨 Lista de Evacuación (Personas Dentro)">
+            <VBox spacing="10">
+                <padding>
+                    <Insets top="12" right="12" bottom="12" left="12"/>
+                </padding>
+                <Label styleClass="acme-titulo-seccion" text="Personal y visitantes actualmente dentro de Zona ACME"/>
+                <TableView fx:id="tablaEvacuacion" styleClass="tabla" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colEvaDni" text="DNI" prefWidth="120"/>
+                        <TableColumn fx:id="colEvaNombre" text="Nombre Completo" prefWidth="250"/>
+                        <TableColumn fx:id="colEvaPuesto" text="Puesto / Rol" prefWidth="180"/>
+                        <TableColumn fx:id="colEvaDepto" text="Departamento" prefWidth="180"/>
+                        <TableColumn fx:id="colEvaEstado" text="Estado" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- Pestaña 2: Desglose Estadistico -->
+        <Tab text="📊 Distribución y Estadísticas">
+            <HBox spacing="16">
+                <padding>
+                    <Insets top="14" right="14" bottom="14" left="14"/>
+                </padding>
+                <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="info-tarjeta">
+                    <Label styleClass="acme-titulo-seccion" text="Visitas por Estado (API Stream)"/>
+                    <VBox fx:id="detalleVisitas" spacing="6"/>
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="info-tarjeta">
+                    <Label styleClass="acme-titulo-seccion" text="Incidentes por Severidad (API Stream)"/>
+                    <VBox fx:id="detalleIncidentes" spacing="6"/>
+                </VBox>
+            </HBox>
+        </Tab>
+
+        <!-- Pestaña 3: Bitacora de Auditoria -->
+        <Tab text="🛡️ Bitácora de Auditoría (Trazabilidad)">
+            <VBox spacing="10">
+                <padding>
+                    <Insets top="12" right="12" bottom="12" left="12"/>
+                </padding>
+                <Label styleClass="acme-titulo-seccion" text="Registro Inmutable de Eventos del Sistema"/>
+                <TableView fx:id="tablaAuditoria" styleClass="tabla" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colAudId" text="ID" prefWidth="60"/>
+                        <TableColumn fx:id="colAudFecha" text="Fecha / Hora" prefWidth="150"/>
+                        <TableColumn fx:id="colAudUsuario" text="Usuario" prefWidth="120"/>
+                        <TableColumn fx:id="colAudAccion" text="Acción" prefWidth="180"/>
+                        <TableColumn fx:id="colAudEntidad" text="Entidad" prefWidth="120"/>
+                        <TableColumn fx:id="colAudDetalles" text="Detalles" prefWidth="320"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+    </TabPane>
+</VBox>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="raiz" spacing="14" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets top="18" right="18" bottom="18" left="18"/>
+    </padding>
+
+    <!-- Barra Superior -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <VBox spacing="2">
+            <Label styleClass="acme-titulo" text="Gestión de Seguridad y Usuarios (RBAC)"/>
+            <Label styleClass="acme-subtitulo" text="Control de acceso basado en roles con permisos dinámicos y granulares en BD"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="8" alignment="CENTER_RIGHT">
+            <Button fx:id="btnCrearUsuario" styleClass="btn-verde" text="＋ Crear Nuevo Usuario" onAction="#onCrearUsuario"/>
+            <Button fx:id="btnRefrescar" styleClass="btn-gris" text="🔄 Refrescar" onAction="#onRefrescar"/>
+        </HBox>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
+        <VBox spacing="16">
+            <!-- Tabla de Usuarios Registrados -->
+            <VBox spacing="8" styleClass="info-tarjeta">
+                <Label styleClass="acme-titulo-seccion" text="Usuarios del Sistema SICA"/>
+                <TableView fx:id="tablaUsuarios" styleClass="tabla" prefHeight="180">
+                    <columns>
+                        <TableColumn fx:id="colUsrId" text="ID" prefWidth="60"/>
+                        <TableColumn fx:id="colUsrNombre" text="Usuario" prefWidth="180"/>
+                        <TableColumn fx:id="colUsrRol" text="Rol Asignado" prefWidth="180"/>
+                        <TableColumn fx:id="colUsrPersona" text="Persona Asociada ID" prefWidth="150"/>
+                        <TableColumn fx:id="colUsrActivo" text="Estado" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Matriz RBAC -->
+            <VBox spacing="8" styleClass="info-tarjeta">
+                <Label styleClass="acme-titulo-seccion" text="Matriz Granular de Roles y Permisos en Base de Datos"/>
+                <GridPane fx:id="gridMatriz" hgap="16" vgap="10"/>
+            </VBox>
+
+            <!-- Mis Permisos -->
+            <VBox spacing="8" styleClass="info-tarjeta">
+                <Label styleClass="acme-titulo-seccion" text="Mis Permisos Activos en la Sesión:"/>
+                <VBox fx:id="mis" spacing="4"/>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</VBox>

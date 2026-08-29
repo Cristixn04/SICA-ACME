@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="raiz" spacing="14" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets top="18" right="18" bottom="18" left="18"/>
+    </padding>
+
+    <!-- Barra Superior: Titulo y Acciones Rapidas de Creacion -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <VBox spacing="2">
+            <Label styleClass="acme-titulo" text="Control de Acceso y Visitas"/>
+            <Label styleClass="acme-subtitulo" text="Complejo Empresarial Zona ACME — Portería Principal"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="8" alignment="CENTER_RIGHT">
+            <Button fx:id="btnPreRegistrar" styleClass="btn-gris" text="＋ Pre-registrar Visita" onAction="#onPreRegistrar"/>
+            <Button fx:id="btnNoAnunciado" styleClass="btn-acme" text="⚡ Invitado No Anunciado" onAction="#onNoAnunciado"/>
+            <Button fx:id="btnOlvidoCarnet" styleClass="btn-gris" text="🪪 Carnet Olvidado" onAction="#onOlvidoCarnet"/>
+            <Button fx:id="btnRefrescar" styleClass="btn-gris" text="🔄 Refrescar" onAction="#onRefrescar"/>
+        </HBox>
+    </HBox>
+
+    <!-- Barra de Busqueda y Filtros -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="buscador" styleClass="campo" promptText="Buscar por DNI, Nombre de Persona o Motivo..."
+                   HBox.hgrow="ALWAYS" onAction="#onBuscar"/>
+        <Button fx:id="btnBuscar" styleClass="btn-gris" text="Buscar" onAction="#onBuscar"/>
+        <ComboBox fx:id="comboFiltro" prefWidth="220" styleClass="campo" onAction="#onFiltroCambiado"/>
+    </HBox>
+
+    <!-- Cuerpo Principal Dividido: Tabla de Visitas a la Izquierda y Tarjeta de Detalle a la Derecha -->
+    <HBox spacing="16" VBox.vgrow="ALWAYS">
+        <!-- Tabla de Visitas -->
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <TableView fx:id="tablaVisitas" styleClass="tabla" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="55"/>
+                    <TableColumn fx:id="colPersona" text="Persona / DNI" prefWidth="190"/>
+                    <TableColumn fx:id="colAnfitrion" text="Anfitrión" prefWidth="160"/>
+                    <TableColumn fx:id="colMotivo" text="Motivo" prefWidth="160"/>
+                    <TableColumn fx:id="colEstado" text="Estado" prefWidth="160"/>
+                    <TableColumn fx:id="colFecha" text="Fecha / Hora" prefWidth="130"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Tarjeta de Detalle del Visitante / Visita Seleccionada -->
+        <VBox fx:id="panelDetalle" styleClass="info-tarjeta" prefWidth="380" minWidth="340" spacing="12">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane fx:id="avatarSlot" styleClass="avatar" prefWidth="52" prefHeight="52" minWidth="52" minHeight="52"/>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label fx:id="lblNombrePersona" styleClass="acme-titulo-seccion" text="Seleccione una visita" wrapText="true"/>
+                    <Label fx:id="lblDniPersona" styleClass="acme-subtitulo" text="DNI: —"/>
+                    <Label fx:id="lblEmpresaPersona" styleClass="info-campo" text="Empresa: —"/>
+                </VBox>
+            </HBox>
+
+            <Region style="-fx-background-color: #2e3a4a; -fx-pref-height: 1;"/>
+
+            <VBox spacing="4">
+                <Label styleClass="info-campo" text="Anfitrión / A quién visita:"/>
+                <Label fx:id="lblAnfitrion" styleClass="info-valor" text="—" wrapText="true"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="info-campo" text="Motivo de la Visita:"/>
+                <Label fx:id="lblMotivo" styleClass="info-valor" text="—" wrapText="true"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="info-campo" text="Estado Actual:"/>
+                <Label fx:id="lblEstado" styleClass="badge" text="SIN SELECCIÓN"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="info-campo" text="Horarios de Ingreso / Salida:"/>
+                <Label fx:id="lblHorarios" styleClass="info-valor" text="Check-in: — | Check-out: —" wrapText="true"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Botonera de Acciones sobre la Visita -->
+            <VBox spacing="8">
+                <HBox spacing="8">
+                    <Button fx:id="btnCheckin" styleClass="btn-verde" text="✓ Registrar Check-in" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onCheckin"/>
+                    <Button fx:id="btnCheckout" styleClass="btn-gris" text="Registrar Check-out" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onCheckout"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Button fx:id="btnAprobar" styleClass="btn-verde" text="✓ Aprobar" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onAprobar"/>
+                    <Button fx:id="btnRechazar" styleClass="btn-rojo" text="✕ Rechazar" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onRechazar"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>
