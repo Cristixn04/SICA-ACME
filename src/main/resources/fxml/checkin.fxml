@@ -24,9 +24,9 @@
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
         <HBox spacing="8" alignment="CENTER_RIGHT">
-            <Button fx:id="btnPreRegistrar" styleClass="btn-gris" text="＋ Pre-registrar Visita" onAction="#onPreRegistrar"/>
+            <Button fx:id="btnPreRegistrar" styleClass="btn-gris" text="+ Pre-registrar Visita" onAction="#onPreRegistrar"/>
             <Button fx:id="btnNoAnunciado" styleClass="btn-acme" text="⚡ Invitado No Anunciado" onAction="#onNoAnunciado"/>
-            <Button fx:id="btnOlvidoCarnet" styleClass="btn-gris" text="🪪 Carnet Olvidado" onAction="#onOlvidoCarnet"/>
+            <Button fx:id="btnOlvidoCarnet" styleClass="btn-gris" text="🎫 Pase Temporal (Olvido)" onAction="#onOlvidoCarnet"/>
             <Button fx:id="btnRefrescar" styleClass="btn-gris" text="🔄 Refrescar" onAction="#onRefrescar"/>
         </HBox>
     </HBox>

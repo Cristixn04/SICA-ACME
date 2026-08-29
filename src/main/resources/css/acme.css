@@ -115,7 +115,6 @@
 
 .campo-icono {
     -fx-font-size: 16px;
-    -fx-font-family: "Noto Emoji";
 }
 
 .campo-plano {
@@ -134,7 +133,7 @@
     -fx-text-fill: #ffffff;
     -fx-font-size: 16px;
     -fx-font-weight: 800;
-    -fx-font-family: "Noto Emoji", "System";
+    -fx-font-family: "Segoe UI", "Ubuntu", "Roboto", "Helvetica Neue", sans-serif;
     -fx-padding: 12 24 12 24;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.5, 0, 4);
@@ -156,7 +155,7 @@
     -fx-text-fill: #ffffff;
     -fx-font-size: 15px;
     -fx-font-weight: 800;
-    -fx-font-family: "Noto Emoji", "System";
+    -fx-font-family: "Segoe UI", "Ubuntu", "Roboto", "Helvetica Neue", sans-serif;
     -fx-padding: 11 22 11 22;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.5, 0, 4);
@@ -173,7 +172,7 @@
     -fx-text-fill: #e6e9ef;
     -fx-font-size: 14px;
     -fx-font-weight: 700;
-    -fx-font-family: "Noto Emoji", "System";
+    -fx-font-family: "Segoe UI", "Ubuntu", "Roboto", "Helvetica Neue", sans-serif;
     -fx-padding: 10 18 10 18;
     -fx-cursor: hand;
 }
@@ -188,7 +187,7 @@
     -fx-text-fill: #ffffff;
     -fx-font-size: 14px;
     -fx-font-weight: 800;
-    -fx-font-family: "Noto Emoji", "System";
+    -fx-font-family: "Segoe UI", "Ubuntu", "Roboto", "Helvetica Neue", sans-serif;
     -fx-padding: 10 18 10 18;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.5, 0, 4);
@@ -215,7 +214,7 @@
     -fx-text-fill: #d7dce3;
     -fx-font-size: 13px;
     -fx-font-weight: 700;
-    -fx-font-family: "Noto Emoji", "System";
+    -fx-font-family: "Segoe UI", "Ubuntu", "Roboto", "Helvetica Neue", sans-serif;
     -fx-padding: 10;
     -fx-cursor: hand;
     -fx-border-color: transparent;
@@ -259,7 +258,7 @@
     -fx-text-fill: #aab2bd;
     -fx-font-size: 14px;
     -fx-font-weight: 700;
-    -fx-font-family: "Noto Emoji", "System";
+    -fx-font-family: "Segoe UI", "Ubuntu", "Roboto", "Helvetica Neue", sans-serif;
     -fx-padding: 12 18 12 18;
     -fx-graphic-text-gap: 12;
     -fx-alignment: CENTER_LEFT;

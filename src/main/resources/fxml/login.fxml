@@ -53,10 +53,10 @@
             <HBox alignment="CENTER" spacing="10">
                 <ToggleButton fx:id="btnFuncionario" styleClass="btn-rol" toggleGroup="$grupoRol"
                               minWidth="112" prefWidth="112" minHeight="58" wrapText="true"
-                              textAlignment="CENTER" text="🪪  Funcionario&#10;de Empresa"/>
+                              textAlignment="CENTER" text="🏢  Funcionario&#10;de Empresa"/>
                 <ToggleButton fx:id="btnGuarda" styleClass="btn-rol" toggleGroup="$grupoRol"
                               selected="true" minWidth="112" prefWidth="112" minHeight="58"
-                              wrapText="true" textAlignment="CENTER" text="🛡️  Guarda de&#10;Seguridad"/>
+                              wrapText="true" textAlignment="CENTER" text="🛡  Guarda de&#10;Seguridad"/>
                 <ToggleButton fx:id="btnAdmin" styleClass="btn-rol" toggleGroup="$grupoRol"
                               minWidth="112" prefWidth="112" minHeight="58" wrapText="true"
                               textAlignment="CENTER" text="🔑  Administrador"/>

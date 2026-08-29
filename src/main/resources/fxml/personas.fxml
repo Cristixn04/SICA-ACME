@@ -22,7 +22,7 @@
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
         <HBox spacing="8" alignment="CENTER_RIGHT">
-            <Button fx:id="btnAgregar" styleClass="btn-verde" text="＋ Registrar Persona" onAction="#onAgregar"/>
+            <Button fx:id="btnAgregar" styleClass="btn-verde" text="+ Registrar Persona" onAction="#onAgregar"/>
             <Button fx:id="btnBloquear" styleClass="btn-rojo" text="🚫 Bloquear Acceso" onAction="#onBloquear"/>
             <Button fx:id="btnActivar" styleClass="btn-gris" text="✓ Activar Acceso" onAction="#onActivar"/>
         </HBox>

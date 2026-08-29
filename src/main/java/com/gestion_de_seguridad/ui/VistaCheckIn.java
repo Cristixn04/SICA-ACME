@@ -488,7 +488,7 @@ public final class VistaCheckIn implements AutoCloseable {
             case "APROBADO" -> "✓ APROBADO";
             case "DENTRO" -> "🏢 DENTRO";
             case "PENDIENTE_APROBACION" -> "⏳ PENDIENTE DE APROBACIÓN";
-            case "PENDIENTE_APROBACION_POR_OLVIDO" -> "🪪 PENDIENTE (PASE TEMPORAL)";
+            case "PENDIENTE_APROBACION_POR_OLVIDO" -> "🎫 PASE TEMPORAL PENDIENTE";
             case "RECHAZADO" -> "✕ RECHAZADO";
             case "CHECK_OUT" -> "SALIDA REGISTRADA";
             case "CERRADA_POR_SISTEMA" -> "⚠️ CERRADA POR SISTEMA";

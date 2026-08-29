@@ -19,7 +19,7 @@
     <Label styleClass="acme-titulo" text="Gestión de Incidentes"/>
 
     <HBox fx:id="barra" spacing="12" alignment="CENTER_LEFT">
-        <Button fx:id="btnReportar" styleClass="btn-acme" text="＋ Reportar Incidente" onAction="#onReportar"/>
+        <Button fx:id="btnReportar" styleClass="btn-acme" text="+ Reportar Incidente" onAction="#onReportar"/>
     </HBox>
 
     <ScrollPane fx:id="scroll" styleClass="scroll-pane" fitToWidth="true" VBox.vgrow="ALWAYS">
