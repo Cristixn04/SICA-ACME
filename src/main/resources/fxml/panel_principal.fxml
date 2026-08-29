@@ -3,6 +3,8 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -15,8 +17,18 @@
 <BorderPane fx:id="raiz" xmlns:fx="http://javafx.com/fxml/1">
 
     <top>
-        <HBox fx:id="barraSuperior" styleClass="barra-superior" alignment="CENTER_RIGHT" spacing="14">
-            <Label styleClass="acme-titulo-medio" text="SICA"/>
+        <HBox fx:id="barraSuperior" styleClass="barra-superior" alignment="CENTER_LEFT" spacing="14">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <ImageView fitWidth="28" fitHeight="28" preserveRatio="true" smooth="true">
+                    <image>
+                        <Image url="@../img/acme-logo.png"/>
+                    </image>
+                </ImageView>
+                <VBox spacing="1">
+                    <Label styleClass="acme-titulo-seccion" text="COMPLEJO EMPRESARIAL ZONA ACME"/>
+                    <Label text="SICA — Sistema Integrado de Control de Acceso" style="-fx-font-size: 11px; -fx-text-fill: #9aa5b1;"/>
+                </VBox>
+            </HBox>
             <Region fx:id="spacerBarra" HBox.hgrow="ALWAYS"/>
             <StackPane fx:id="campanaSlot"/>
             <MenuButton fx:id="usuarioMenu" styleClass="btn-gris"/>

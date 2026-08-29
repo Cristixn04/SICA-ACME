@@ -45,6 +45,12 @@ public final class App extends Application {
         stage.setTitle("SICA - Sistema Integrado de Control de Acceso (Zona ACME)");
         stage.setMinWidth(900);
         stage.setMinHeight(600);
+        try (var is = App.class.getResourceAsStream("/img/acme-logo.png")) {
+            if (is != null) {
+                stage.getIcons().add(new javafx.scene.image.Image(is));
+            }
+        } catch (Exception ignored) {
+        }
         mostrarLogin();
         stage.show();
     }

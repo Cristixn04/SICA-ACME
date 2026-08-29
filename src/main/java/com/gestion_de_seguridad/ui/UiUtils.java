@@ -63,8 +63,7 @@ public final class UiUtils {
     }
 
     /**
-     * Insignia circular del cohete ACME (usada en el logo grande y en el
-     * encabezado compacto del sidebar).
+     * Insignia circular del cohete ACME (usada como fallback vectorial).
      */
     private static StackPane insigniaCohete(double diametro) {
         Circle fondo = new Circle(diametro / 2.0);
@@ -101,56 +100,99 @@ public final class UiUtils {
     }
 
     /**
-     * Logo grande SICA ACME (insignia + texto "SICA" + "ACME"), usado en las
-     * tarjetas de Login y Recuperar Contraseña.
+     * Crea un ImageView con el logo oficial ACME escalado con suavizado.
+     */
+    public static Node crearIconoAcme(double tamano) {
+        try (var is = UiUtils.class.getResourceAsStream("/img/acme-logo.png")) {
+            if (is != null) {
+                javafx.scene.image.ImageView iv = new javafx.scene.image.ImageView(new javafx.scene.image.Image(is));
+                iv.setFitWidth(tamano);
+                iv.setFitHeight(tamano);
+                iv.setPreserveRatio(true);
+                iv.setSmooth(true);
+                iv.setEffect(new javafx.scene.effect.DropShadow(10, Color.web("#f28c28", 0.6)));
+                return iv;
+            }
+        } catch (Exception ignored) {
+        }
+        return insigniaCohete(tamano);
+    }
+
+    /**
+     * Logo grande SICA ACME (icono oficial ACME + texto "SICA" + "ZONA ACME"),
+     * usado en las tarjetas de Login y Recuperar Contraseña.
      */
     public static StackPane crearLogoSica() {
+        Node logo = crearIconoAcme(92);
+
         Label sica = new Label("SICA");
         sica.setTextFill(Color.web("#ffffff"));
-        sica.setStyle("-fx-font-size: 24px; -fx-font-weight: 900;");
+        sica.setStyle("-fx-font-size: 26px; -fx-font-weight: 900;");
 
-        Label acme = new Label("ACME");
+        Label acme = new Label("COMPLEJO EMPRESARIAL ZONA ACME");
         acme.setTextFill(Color.web("#f28c28"));
-        acme.setStyle("-fx-font-size: 13px; -fx-font-weight: 900; -fx-letter-spacing: 3px;");
+        acme.setStyle("-fx-font-size: 11px; -fx-font-weight: 900; -fx-letter-spacing: 1.5px;");
 
-        VBox textos = new VBox(0, sica, acme);
+        VBox textos = new VBox(1, sica, acme);
         textos.setAlignment(Pos.CENTER);
 
-        VBox contenedor = new VBox(6, insigniaCohete(58), textos);
+        VBox contenedor = new VBox(6, logo, textos);
         contenedor.setAlignment(Pos.CENTER);
         return new StackPane(contenedor);
     }
 
     /**
-     * Encabezado compacto del sidebar: insignia pequeña + "ACME" al lado y
-     * "SICA" debajo, para el tope del panel de navegacion.
+     * Encabezado compacto del sidebar: icono ACME + "ACME" al lado y
+     * "SICA" debajo, para el panel de navegación principal.
      */
     public static VBox crearLogoCompacto() {
-        Label acme = new Label("ACME");
-        acme.setStyle("-fx-font-size: 15px; -fx-font-weight: 900; -fx-text-fill: #f28c28;");
+        Node logo = crearIconoAcme(34);
 
-        HBox fila = new HBox(8, insigniaCohete(30), acme);
+        Label acme = new Label("ACME");
+        acme.setStyle("-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill: #f28c28;");
+
+        HBox fila = new HBox(8, logo, acme);
         fila.setAlignment(Pos.CENTER_LEFT);
 
-        Label sica = new Label("SICA");
-        sica.setStyle("-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #9aa5b1; -fx-letter-spacing: 2px;");
+        Label sica = new Label("SICA - Control de Acceso");
+        sica.setStyle("-fx-font-size: 11px; -fx-font-weight: 700; -fx-text-fill: #9aa5b1;");
 
-        VBox contenedor = new VBox(2, fila, sica);
+        VBox contenedor = new VBox(4, fila, sica);
         contenedor.getStyleClass().add("sidebar-header");
         return contenedor;
     }
 
     /**
-     * Fondo tipo "plano industrial" (blueprint): rejilla de lineas claras
-     * sobre azul muy oscuro, para las pantallas de Login y Recuperar
-     * Contraseña. Se dibuja con formas vectoriales, sin depender de una
-     * imagen externa.
+     * Fondo para el Login y Recuperación: Carga la imagen azul de fondo (login-bg.jpg)
+     * con una capa semi-transparente que resalta la tarjeta con alto contraste.
      */
     public static Pane fondoBlueprint(double ancho, double alto) {
+        StackPane contenedor = new StackPane();
+        contenedor.setPrefSize(ancho, alto);
+
+        try (var is = UiUtils.class.getResourceAsStream("/img/login-bg.jpg")) {
+            if (is != null) {
+                javafx.scene.image.ImageView iv = new javafx.scene.image.ImageView(new javafx.scene.image.Image(is));
+                iv.setFitWidth(ancho);
+                iv.setFitHeight(alto);
+                iv.setPreserveRatio(false);
+                iv.setSmooth(true);
+
+                // Capa de oscurecimiento blueprint para que el formulario se lea impecable
+                javafx.scene.layout.Region capa = new javafx.scene.layout.Region();
+                capa.setPrefSize(ancho, alto);
+                capa.setStyle("-fx-background-color: linear-gradient(to bottom right, rgba(14, 20, 31, 0.72), rgba(6, 10, 16, 0.85));");
+
+                contenedor.getChildren().addAll(iv, capa);
+                return contenedor;
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Fallback vectorial si no encuentra el recurso
         Pane fondo = new Pane();
         fondo.setPrefSize(ancho, alto);
         fondo.setStyle("-fx-background-color: linear-gradient(to bottom right, #101826, #0a0e15);");
-
         double paso = 42;
         for (double x = 0; x <= ancho; x += paso) {
             Line l = new Line(x, 0, x, alto);
@@ -164,18 +206,7 @@ public final class UiUtils {
             l.setStrokeWidth(1);
             fondo.getChildren().add(l);
         }
-        // Un par de "engranajes" decorativos, como en la referencia.
-        fondo.getChildren().add(engranaje(70, 90, 34, 0.12));
-        fondo.getChildren().add(engranaje(ancho - 90, alto - 110, 46, 0.10));
         return fondo;
-    }
-
-    private static Circle engranaje(double x, double y, double radio, double opacidad) {
-        Circle c = new Circle(x, y, radio);
-        c.setFill(Color.TRANSPARENT);
-        c.setStroke(Color.web("#f28c28", opacidad));
-        c.setStrokeWidth(4);
-        return c;
     }
 
     /**
