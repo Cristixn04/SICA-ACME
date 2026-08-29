@@ -14,13 +14,15 @@ public class VisitaCreadaEvent implements DomainEvent {
     private final Long personaId;
     private final EstadoVisita estado;
     private final String nombreFlujo;
+    private final Long actorId;
 
-    public VisitaCreadaEvent(Long visitaId, Long personaId, EstadoVisita estado, String nombreFlujo) {
+    public VisitaCreadaEvent(Long visitaId, Long personaId, EstadoVisita estado, String nombreFlujo, Long actorId) {
         this.ocurridoEn = System.currentTimeMillis();
         this.visitaId = visitaId;
         this.personaId = personaId;
         this.estado = estado;
         this.nombreFlujo = nombreFlujo;
+        this.actorId = actorId;
     }
 
     @Override
@@ -31,6 +33,11 @@ public class VisitaCreadaEvent implements DomainEvent {
     @Override
     public Long entidadId() {
         return visitaId;
+    }
+
+    @Override
+    public Long actorId() {
+        return actorId;
     }
 
     public Long getPersonaId() {

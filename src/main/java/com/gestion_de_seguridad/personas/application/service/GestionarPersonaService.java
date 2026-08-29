@@ -37,7 +37,7 @@ public class GestionarPersonaService implements GestionarPersonaUseCase {
     public Persona registrar(Long idUsuario, Persona persona) {
         verificarPermiso.verificar(idUsuario, "registrar_persona");
         Persona guardada = personaRepository.guardar(persona);
-        eventPublisher.publicar(new PersonaRegistradaEvent(guardada.getId(), guardada.getDni()));
+        eventPublisher.publicar(new PersonaRegistradaEvent(guardada.getId(), guardada.getDni(), idUsuario));
         return guardada;
     }
 
@@ -58,6 +58,11 @@ public class GestionarPersonaService implements GestionarPersonaUseCase {
     }
 
     @Override
+    public Persona buscarPorId(Long idPersona) {
+        return personaRepository.buscarPorId(idPersona).orElse(null);
+    }
+
+    @Override
     public void actualizar(Long idUsuario, Persona persona) {
         verificarPermiso.verificar(idUsuario, "editar_persona");
         if (persona.getId() == null) {
@@ -70,6 +75,12 @@ public class GestionarPersonaService implements GestionarPersonaUseCase {
     public void bloquear(Long idUsuario, Long idPersona) {
         verificarPermiso.verificar(idUsuario, "bloquear_persona");
         personaRepository.cambiarEstado(idPersona, EstadoPersona.INACTIVO);
-        eventPublisher.publicar(new PersonaBloqueadaEvent(idPersona));
+        eventPublisher.publicar(new PersonaBloqueadaEvent(idPersona, idUsuario));
+    }
+
+    @Override
+    public void activar(Long idUsuario, Long idPersona) {
+        verificarPermiso.verificar(idUsuario, "editar_persona");
+        personaRepository.cambiarEstado(idPersona, EstadoPersona.ACTIVO);
     }
 }

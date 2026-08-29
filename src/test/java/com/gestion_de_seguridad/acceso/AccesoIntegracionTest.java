@@ -98,4 +98,23 @@ class AccesoIntegracionTest {
         assertEquals(EstadoVisita.CERRADA_POR_SISTEMA, cerrada.getEstado());
         assertEquals("Salida Olvidada", cerrada.getMotivoCierre());
     }
+
+    @Test
+    void flujoOlvidoCarnetPaseTemporal() {
+        Persona trabajador = crearPersonaTemporal();
+
+        // Guarda crea solicitud por carnet olvidado
+        Visita paseTemporal = acceso.crearVisita(2L, AccesoContainer.porOlvidoCarnet(),
+                Visita.builder().personaId(trabajador.getId()).motivo("Pase temporal por carnet olvidado").build());
+        assertEquals(EstadoVisita.PENDIENTE_APROBACION_POR_OLVIDO, paseTemporal.getEstado());
+
+        // Funcionario aprueba el pase temporal para ese dia
+        Visita aprobada = acceso.aprobar(3L, paseTemporal.getId());
+        assertEquals(EstadoVisita.APROBADO, aprobada.getEstado());
+
+        // Guarda realiza check-in
+        Visita dentro = acceso.registrarCheckIn(2L, aprobada.getId());
+        assertEquals(EstadoVisita.DENTRO, dentro.getEstado());
+        assertNotNull(dentro.getFechaHoraCheckin());
+    }
 }

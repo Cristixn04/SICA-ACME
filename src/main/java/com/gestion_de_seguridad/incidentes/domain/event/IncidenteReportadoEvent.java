@@ -13,12 +13,14 @@ public class IncidenteReportadoEvent implements DomainEvent {
     private final Long incidenteId;
     private final Long personaId;
     private final SeveridadIncidente severidad;
+    private final Long actorId;
 
-    public IncidenteReportadoEvent(Long incidenteId, Long personaId, SeveridadIncidente severidad) {
+    public IncidenteReportadoEvent(Long incidenteId, Long personaId, SeveridadIncidente severidad, Long actorId) {
         this.ocurridoEn = System.currentTimeMillis();
         this.incidenteId = incidenteId;
         this.personaId = personaId;
         this.severidad = severidad;
+        this.actorId = actorId;
     }
 
     @Override
@@ -29,6 +31,11 @@ public class IncidenteReportadoEvent implements DomainEvent {
     @Override
     public Long entidadId() {
         return incidenteId;
+    }
+
+    @Override
+    public Long actorId() {
+        return actorId;
     }
 
     public Long getPersonaId() {

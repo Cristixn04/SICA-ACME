@@ -53,17 +53,14 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
 
         // Regularizacion por salida olvidada (seccion 2.4): si la persona
         // tiene una visita previa aun activa, se cierra por sistema (no se
-        // bloquea el nuevo ingreso).
+        // bloquea el nuevo ingreso). El cierre y el alta de la nueva visita se
+        // persisten de forma atomica (una unica transaccion).
+        Visita anteriorActiva = null;
         Long personaId = datos.getPersonaId();
         if (personaId != null) {
-            visitaRepository.ultimaVisitaActivaDePersona(personaId)
+            anteriorActiva = visitaRepository.ultimaVisitaActivaDePersona(personaId)
                     .filter(activa -> !activa.getId().equals(datos.getId()))
-                    .ifPresent(activa -> {
-                        Visita cerrada = activa.cerrarPorSistema(MOTIVO_SALIDA_OLVIDADA);
-                        visitaRepository.actualizar(cerrada);
-                        eventPublisher.publicar(
-                                new VisitaCerradaPorSistemaEvent(cerrada.getId(), MOTIVO_SALIDA_OLVIDADA));
-                    });
+                    .orElse(null);
         }
 
         Visita aCrear = Visita.builder()
@@ -75,9 +72,17 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
                 .estado(estrategia.estadoInicial())
                 .build();
 
-        Visita guardada = visitaRepository.guardar(aCrear);
+        Visita guardada = visitaRepository.guardarRegularizando(
+                anteriorActiva == null ? null : anteriorActiva.cerrarPorSistema(MOTIVO_SALIDA_OLVIDADA),
+                aCrear);
+
+        if (anteriorActiva != null) {
+            eventPublisher.publicar(new VisitaCerradaPorSistemaEvent(
+                    anteriorActiva.getId(), MOTIVO_SALIDA_OLVIDADA, idUsuario));
+        }
         eventPublisher.publicar(new VisitaCreadaEvent(
-                guardada.getId(), guardada.getPersonaId(), guardada.getEstado(), estrategia.nombreFlujo()));
+                guardada.getId(), guardada.getPersonaId(), guardada.getEstado(),
+                estrategia.nombreFlujo(), idUsuario));
         return guardada;
     }
 
@@ -87,7 +92,7 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
         Visita actual = buscarPorId(idVisita);
         Visita aprobada = actual.aprobar();
         visitaRepository.actualizar(aprobada);
-        eventPublisher.publicar(new VisitaAprobadaEvent(aprobada.getId()));
+        eventPublisher.publicar(new VisitaAprobadaEvent(aprobada.getId(), idFuncionario));
         return aprobada;
     }
 
@@ -97,7 +102,7 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
         Visita actual = buscarPorId(idVisita);
         Visita rechazada = actual.rechazar();
         visitaRepository.actualizar(rechazada);
-        eventPublisher.publicar(new VisitaRechazadaEvent(rechazada.getId()));
+        eventPublisher.publicar(new VisitaRechazadaEvent(rechazada.getId(), idFuncionario));
         return rechazada;
     }
 
@@ -108,7 +113,7 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
         Visita checkin = actual.realizarCheckIn(idGuarda);
         Visita dentro = checkin.confirmarDentro();
         visitaRepository.actualizar(dentro);
-        eventPublisher.publicar(new CheckInRealizadoEvent(dentro.getId()));
+        eventPublisher.publicar(new CheckInRealizadoEvent(dentro.getId(), idGuarda));
         return dentro;
     }
 
@@ -118,7 +123,7 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
         Visita actual = buscarPorId(idVisita);
         Visita checkout = actual.realizarCheckOut();
         visitaRepository.actualizar(checkout);
-        eventPublisher.publicar(new CheckOutRealizadoEvent(checkout.getId()));
+        eventPublisher.publicar(new CheckOutRealizadoEvent(checkout.getId(), idGuarda));
         return checkout;
     }
 
@@ -131,5 +136,10 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
     public Visita buscarPorId(Long idVisita) {
         return visitaRepository.buscarPorId(idVisita)
                 .orElseThrow(() -> new EntidadNoEncontradaException("visita", idVisita));
+    }
+
+    @Override
+    public List<Visita> listarTodas() {
+        return visitaRepository.listar();
     }
 }

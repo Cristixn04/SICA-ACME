@@ -10,11 +10,13 @@ public class PersonaBloqueadaEvent implements DomainEvent {
 
     private final long ocurridoEn;
     private final Long personaId;
+    private final Long actorId;
     private final String accion;
 
-    public PersonaBloqueadaEvent(Long personaId) {
+    public PersonaBloqueadaEvent(Long personaId, Long actorId) {
         this.ocurridoEn = System.currentTimeMillis();
         this.personaId = personaId;
+        this.actorId = actorId;
         this.accion = "BLOQUEAR_PERSONA";
     }
 
@@ -26,6 +28,11 @@ public class PersonaBloqueadaEvent implements DomainEvent {
     @Override
     public Long entidadId() {
         return personaId;
+    }
+
+    @Override
+    public Long actorId() {
+        return actorId;
     }
 
     public String getAccion() {

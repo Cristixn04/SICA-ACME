@@ -22,4 +22,13 @@ public interface DomainEvent {
     default Long entidadId() {
         return null;
     }
+
+    /**
+     * Identificador del usuario que ejecuto la accion que origina el evento.
+     * Puede ser null cuando la accion no tiene actor humano (ej. cierres
+     * automaticos del sistema).
+     */
+    default Long actorId() {
+        return null;
+    }
 }

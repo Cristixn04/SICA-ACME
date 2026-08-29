@@ -12,10 +12,12 @@ public class VisitaAprobadaEvent implements DomainEvent {
 
     private final long ocurridoEn;
     private final Long visitaId;
+    private final Long actorId;
 
-    public VisitaAprobadaEvent(Long visitaId) {
+    public VisitaAprobadaEvent(Long visitaId, Long actorId) {
         this.ocurridoEn = System.currentTimeMillis();
         this.visitaId = visitaId;
+        this.actorId = actorId;
     }
 
     @Override
@@ -26,5 +28,10 @@ public class VisitaAprobadaEvent implements DomainEvent {
     @Override
     public Long entidadId() {
         return visitaId;
+    }
+
+    @Override
+    public Long actorId() {
+        return actorId;
     }
 }

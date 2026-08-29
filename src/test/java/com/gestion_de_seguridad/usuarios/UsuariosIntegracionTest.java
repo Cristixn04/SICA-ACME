@@ -54,4 +54,22 @@ class UsuariosIntegracionTest {
     void guardaTienePermisoDeCheckin() {
         assertTrue(verificar.tienePermiso(2L, "registrar_checkin"));
     }
+
+    @Test
+    void listarUsuariosYRegistrarNuevo() {
+        var consultar = UsuariosContainer.consultar();
+        var listaInicial = consultar.listarTodos();
+        assertNotNull(listaInicial);
+        assertTrue(listaInicial.size() >= 3);
+
+        String usernamePrueba = "operador_test_" + System.currentTimeMillis();
+        Usuario nuevo = consultar.registrarUsuario(1L, usernamePrueba, "pass1234", "GUARDA");
+        assertNotNull(nuevo.getId());
+        assertEquals(usernamePrueba, nuevo.getNombreUsuario());
+        assertEquals("GUARDA", nuevo.getRol().getNombre());
+
+        Usuario autenticado = autenticar.autenticar(usernamePrueba, "pass1234");
+        assertNotNull(autenticado);
+        assertEquals(nuevo.getId(), autenticado.getId());
+    }
 }

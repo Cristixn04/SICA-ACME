@@ -42,7 +42,7 @@ public class GestionarIncidenteService implements GestionarIncidenteUseCase {
         verificarPermiso.verificar(idUsuario, "reportar_incidente");
         Incidente guardado = incidenteRepository.guardar(incidente);
         eventPublisher.publicar(new IncidenteReportadoEvent(
-                guardado.getId(), guardado.getPersonaId(), guardado.getSeveridad()));
+                guardado.getId(), guardado.getPersonaId(), guardado.getSeveridad(), idUsuario));
         return guardado;
     }
 

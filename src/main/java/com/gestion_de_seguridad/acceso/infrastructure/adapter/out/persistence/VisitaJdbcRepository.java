@@ -32,10 +32,39 @@ public class VisitaJdbcRepository implements VisitaRepositoryPort {
 
     @Override
     public Visita guardar(Visita visita) {
+        try (Connection c = PostgresDataSource.obtenerConexion()) {
+            return guardarCon(c, visita);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al guardar visita.", e);
+        }
+    }
+
+    @Override
+    public Visita guardarRegularizando(Visita anteriorActiva, Visita nueva) {
+        try (Connection c = PostgresDataSource.obtenerConexion()) {
+            c.setAutoCommit(false);
+            try {
+                if (anteriorActiva != null) {
+                    actualizarCon(c, anteriorActiva);
+                }
+                Visita guardada = guardarCon(c, nueva);
+                c.commit();
+                return guardada;
+            } catch (SQLException e) {
+                c.rollback();
+                throw e;
+            } finally {
+                c.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al guardar visita con regularizacion.", e);
+        }
+    }
+
+    private Visita guardarCon(Connection c, Visita visita) throws SQLException {
         String sql = "INSERT INTO visita (persona_id, empresa_propietaria_id, persona_visitada_id, " +
                 "motivo, fecha_hora_visita, estado) VALUES (?, ?, ?, ?, ?, ?::estado_visita)";
-        try (Connection c = PostgresDataSource.obtenerConexion();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, visita.getPersonaId());
             setLong(ps, 2, visita.getEmpresaPropietariaId());
             setLong(ps, 3, visita.getPersonaVisitadaId());
@@ -49,17 +78,22 @@ public class VisitaJdbcRepository implements VisitaRepositoryPort {
                 }
             }
             return visita;
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al guardar visita.", e);
         }
     }
 
     @Override
     public void actualizar(Visita visita) {
+        try (Connection c = PostgresDataSource.obtenerConexion()) {
+            actualizarCon(c, visita);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al actualizar visita.", e);
+        }
+    }
+
+    private void actualizarCon(Connection c, Visita visita) throws SQLException {
         String sql = "UPDATE visita SET estado=?::estado_visita, fecha_hora_checkin=?, " +
                 "fecha_hora_checkout=?, guarda_id=?, motivo_cierre=? WHERE id=?";
-        try (Connection c = PostgresDataSource.obtenerConexion();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, visita.getEstado().name());
             setTimestamp(ps, 2, visita.getFechaHoraCheckin());
             setTimestamp(ps, 3, visita.getFechaHoraCheckout());
@@ -67,8 +101,6 @@ public class VisitaJdbcRepository implements VisitaRepositoryPort {
             ps.setString(5, visita.getMotivoCierre());
             ps.setLong(6, visita.getId());
             ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al actualizar visita.", e);
         }
     }
 

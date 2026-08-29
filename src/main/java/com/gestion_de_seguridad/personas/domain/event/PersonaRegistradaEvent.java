@@ -11,12 +11,14 @@ public class PersonaRegistradaEvent implements DomainEvent {
     private final long ocurridoEn;
     private final Long personaId;
     private final String dni;
+    private final Long actorId;
     private final String accion;
 
-    public PersonaRegistradaEvent(Long personaId, String dni) {
+    public PersonaRegistradaEvent(Long personaId, String dni, Long actorId) {
         this.ocurridoEn = System.currentTimeMillis();
         this.personaId = personaId;
         this.dni = dni;
+        this.actorId = actorId;
         this.accion = "REGISTRAR_PERSONA";
     }
 
@@ -28,6 +30,11 @@ public class PersonaRegistradaEvent implements DomainEvent {
     @Override
     public Long entidadId() {
         return personaId;
+    }
+
+    @Override
+    public Long actorId() {
+        return actorId;
     }
 
     public String getDni() {

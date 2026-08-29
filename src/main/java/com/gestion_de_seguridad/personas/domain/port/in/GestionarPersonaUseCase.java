@@ -27,6 +27,11 @@ public interface GestionarPersonaUseCase {
     List<Persona> listarTodas();
 
     /**
+     * Busca una persona por su id (null si no existe). Util para la UI.
+     */
+    Persona buscarPorId(Long idPersona);
+
+    /**
      * Actualiza los datos de una persona (permiso 'editar_persona').
      */
     void actualizar(Long idUsuario, Persona persona);
@@ -36,4 +41,10 @@ public interface GestionarPersonaUseCase {
      * seteando su estado a INACTIVO.
      */
     void bloquear(Long idUsuario, Long idPersona);
+
+    /**
+     * Reactiva el acceso de una persona (permiso 'editar_persona' o 'bloquear_persona'),
+     * seteando su estado a ACTIVO.
+     */
+    void activar(Long idUsuario, Long idPersona);
 }

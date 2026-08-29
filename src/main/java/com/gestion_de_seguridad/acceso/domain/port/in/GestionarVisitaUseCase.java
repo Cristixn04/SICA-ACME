@@ -53,4 +53,9 @@ public interface GestionarVisitaUseCase {
     List<Visita> buscarPorTexto(String texto);
 
     Visita buscarPorId(Long idVisita);
+
+    /**
+     * Lista todas las visitas registradas en el sistema.
+     */
+    List<Visita> listarTodas();
 }

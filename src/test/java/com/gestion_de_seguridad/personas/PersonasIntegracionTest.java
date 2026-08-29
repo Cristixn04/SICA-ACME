@@ -44,6 +44,10 @@ class PersonasIntegracionTest {
         gestionar.bloquear(1L, registrada.getId());
         Persona bloqueada = gestionar.buscarPorDni(dni);
         assertEquals(EstadoPersona.INACTIVO, bloqueada.getEstado());
+
+        gestionar.activar(1L, registrada.getId());
+        Persona reactivada = gestionar.buscarPorDni(dni);
+        assertEquals(EstadoPersona.ACTIVO, reactivada.getEstado());
     }
 
     @Test
