@@ -33,7 +33,13 @@ public final class App extends Application {
     }
 
     @Override
+    public void init() {
+        UiUtils.cargarFuentes();
+    }
+
+    @Override
     public void start(Stage stage) {
+        UiUtils.cargarFuentes();
         inicializarContenedores();
         this.stage = stage;
         stage.setTitle("SICA - Sistema Integrado de Control de Acceso (Zona ACME)");

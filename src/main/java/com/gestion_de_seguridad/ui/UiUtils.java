@@ -36,10 +36,29 @@ public final class UiUtils {
     private UiUtils() {
     }
 
+    private static boolean fuenteCargada = false;
+
     /**
-     * Carga el CSS del tema sobre una escena.
+     * Carga la fuente Noto Emoji (incluida en resources/fonts/) para garantizar
+     * que JavaFX renderice todos los emojis e íconos en cualquier sistema operativo.
+     */
+    public static synchronized void cargarFuentes() {
+        if (!fuenteCargada) {
+            try (var is = UiUtils.class.getResourceAsStream("/fonts/NotoEmoji-Variable.ttf")) {
+                if (is != null) {
+                    javafx.scene.text.Font.loadFont(is, 14);
+                }
+            } catch (Exception ignored) {
+            }
+            fuenteCargada = true;
+        }
+    }
+
+    /**
+     * Carga el CSS del tema sobre una escena asegurando la disponibilidad de fuentes.
      */
     public static void aplicarTema(Scene scene) {
+        cargarFuentes();
         scene.getStylesheets().add(UiUtils.class.getResource("/css/acme.css").toExternalForm());
     }
 
