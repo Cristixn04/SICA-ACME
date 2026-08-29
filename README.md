@@ -204,7 +204,7 @@ psql -d sica_db -f src/main/resources/db/data.sql
 ```
 
 > [!NOTE]
-> La configuración de conexión se encuentra en `src/main/resources/application.properties`. Por defecto utiliza `jdbc:postgresql://localhost:5432/sica_db` con usuario `cristixn` y contraseña vacía (ident socket local). Modifícalo según tu entorno si es necesario.
+> La configuración de conexión se encuentra en `src/main/resources/application.properties`. Por defecto utiliza `localhost:5432/sica_db` con usuario `postgres` y contraseña `postgres` (con fallbacks automáticos en entornos locales). Modifícalo según tu entorno si es necesario.
 
 ### Paso 2: Compilación y Pruebas
 Ejecuta la suite de pruebas automatizadas:
@@ -214,11 +214,20 @@ mvn clean test
 *Se ejecutarán las **26 pruebas de integración** validando la arquitectura hexagonal, transiciones de estado, auditoría y reglas de negocio.*
 
 ### Paso 3: Ejecutar la Aplicación
-Para iniciar la interfaz gráfica de usuario en JavaFX:
+Puedes iniciar la interfaz gráfica de usuario en JavaFX con cualquiera de estas opciones:
+
+**Opción A (Plugin JavaFX):**
 ```bash
 mvn javafx:run
 ```
-*(O de forma alternativa: `mvn compile exec:java -Dexec.mainClass="com.gestion_de_seguridad.ui.Launcher"`)*
+
+**Opción B (Exec Plugin):**
+```bash
+mvn exec:java
+```
+
+**Opción C (Desde cualquier IDE):**
+Ejecuta directamente la clase principal [`com.gestion_de_seguridad.ui.Launcher`](file:///home/cristixn/.gemini/antigravity/scratch/seguridad-acme/src/main/java/com/gestion_de_seguridad/ui/Launcher.java).
 
 ---
 
