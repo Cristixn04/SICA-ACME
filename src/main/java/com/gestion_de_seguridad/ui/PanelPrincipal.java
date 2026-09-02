@@ -105,9 +105,10 @@ public final class PanelPrincipal {
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
-        Button btnAyuda = new Button("❓   Ayuda");
+        Button btnAyuda = new Button("❓   Ayuda y Soporte");
         btnAyuda.getStyleClass().add("item-nav");
         btnAyuda.setMaxWidth(Double.MAX_VALUE);
+        btnAyuda.setOnAction(e -> VistaAyuda.mostrarDialogoAyuda());
 
         sidebar.getChildren().addAll(spacer, btnAyuda);
 

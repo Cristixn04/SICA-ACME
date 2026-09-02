@@ -150,6 +150,8 @@ public final class App extends Application {
         // FUNCIONARIO
         return new PanelPrincipal.ItemNavegacion[]{
                 new PanelPrincipal.ItemNavegacion("📅", "Visitas / Check-in", this::mostrarCheckIn),
+                new PanelPrincipal.ItemNavegacion("👤", "Personal y Personas", () ->
+                        mostrarContenido(new VistaPersonas().crear())),
         };
     }
 

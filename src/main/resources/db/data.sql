@@ -85,9 +85,10 @@ SELECT 1, id FROM permiso;
 INSERT INTO rol_permiso (rol_id, permiso_id) VALUES
     (2, 4), (2, 7), (2, 8), (2, 11), (2, 12), (2, 13);
 
--- FUNCIONARIO: crear_visita, aprobar_visita, rechazar_visita, reportar_incidente
+-- FUNCIONARIO: crear_visita, aprobar_visita, rechazar_visita, reportar_incidente,
+--              registrar_persona, editar_persona
 INSERT INTO rol_permiso (rol_id, permiso_id) VALUES
-    (3, 8), (3, 9), (3, 10), (3, 13);
+    (3, 8), (3, 9), (3, 10), (3, 13), (3, 4), (3, 5);
 
 -- ------------------------------------------------------------
 -- Usuarios (contraseña en texto de ejemplo: 1234)

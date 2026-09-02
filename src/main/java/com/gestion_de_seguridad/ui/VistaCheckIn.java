@@ -151,6 +151,7 @@ public final class VistaCheckIn implements AutoCloseable {
     @FXML
     private void initialize() {
         configurarFiltros();
+        configurarPermisosPorRol();
         configurarTabla();
         deshabilitarAcciones();
         mostrarDetalleVacio();
@@ -165,6 +166,35 @@ public final class VistaCheckIn implements AutoCloseable {
 
         // Carga inicial
         recargar();
+    }
+
+    private void configurarPermisosPorRol() {
+        String rol = Sesion.obtener().nombreRol();
+        if ("GUARDA".equalsIgnoreCase(rol)) {
+            // El Guarda de Seguridad solo puede registrar visitas de invitado no anunciado y pase temporal por olvido
+            btnPreRegistrar.setVisible(false);
+            btnPreRegistrar.setManaged(false);
+            btnNoAnunciado.setVisible(true);
+            btnNoAnunciado.setManaged(true);
+            btnOlvidoCarnet.setVisible(true);
+            btnOlvidoCarnet.setManaged(true);
+        } else if ("FUNCIONARIO".equalsIgnoreCase(rol)) {
+            // El Funcionario pre-registra visitas programadas para sus invitados
+            btnPreRegistrar.setVisible(true);
+            btnPreRegistrar.setManaged(true);
+            btnNoAnunciado.setVisible(false);
+            btnNoAnunciado.setManaged(false);
+            btnOlvidoCarnet.setVisible(false);
+            btnOlvidoCarnet.setManaged(false);
+        } else {
+            // ADMINISTRADOR: acceso total a las 3 acciones
+            btnPreRegistrar.setVisible(true);
+            btnPreRegistrar.setManaged(true);
+            btnNoAnunciado.setVisible(true);
+            btnNoAnunciado.setManaged(true);
+            btnOlvidoCarnet.setVisible(true);
+            btnOlvidoCarnet.setManaged(true);
+        }
     }
 
     private void configurarFiltros() {
@@ -268,9 +298,15 @@ public final class VistaCheckIn implements AutoCloseable {
 
     /**
      * Dialogo interactivo para el Escenario 1: Invitado Pre-registrado.
+     * Solo disponible para Funcionarios y Administradores.
      */
     @FXML
     private void onPreRegistrar() {
+        if ("GUARDA".equalsIgnoreCase(Sesion.obtener().nombreRol())) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Acceso Denegado",
+                    "El rol Guarda de Seguridad solo tiene permitido registrar visitas no anunciadas y pases temporales por olvido de carnet.");
+            return;
+        }
         mostrarDialogoCrearVisita("Pre-registrar Invitado",
                 "Registro previo de visita (Estado quedará como APROBADO)",
                 AccesoContainer.preRegistrada(), false);
