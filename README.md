@@ -4,8 +4,8 @@
 [![JavaFX](https://img.shields.io/badge/JavaFX-21.0.2-blue.svg)](https://openjfx.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-336791.svg)](https://www.postgresql.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.9%2B-C71A36.svg)](https://maven.apache.org/)
-[![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20%2B%20Vertical%20Slice-green.svg)](#-2-arquitectura-del-sistema-hexagonal--vertical-slice)
-[![Tests](https://img.shields.io/badge/Tests-26%2F26%20Passed-brightgreen.svg)](#-9-pruebas-y-verificación)
+[![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20%2B%20Vertical%20Slice-green.svg)](#-6-arquitectura-hexagonal-para-qué-sirve-cada-carpeta)
+[![Tests](https://img.shields.io/badge/Tests-26%2F26%20Passed-brightgreen.svg)](#-10-pruebas-y-verificación)
 
 ---
 
@@ -76,7 +76,7 @@ db.password=postgres
 #### 4. Ejecutar la Aplicación
 ```bash
 # Opción recomendada:
-mvn javafx:run
+mvn clean javafx:run
 
 # O usando el plugin exec:
 mvn exec:java
@@ -84,11 +84,58 @@ mvn exec:java
 
 ---
 
-## 🗄️ 3. Conexión con DBeaver
+## 🍎 3. Configuración de Java 21 en macOS (Cambiar de JDK 17 a JDK 21)
+
+Si estás trabajando en **macOS** y tu sistema tiene por defecto Java 17, sigue estos pasos para cambiar a Java 21:
+
+### 1. Verificar versiones de Java instaladas en Mac:
+```bash
+/usr/libexec/java_home -V
+```
+
+### 2. Instalar JDK 21 (si no aparece en la lista):
+* **Con Homebrew (Terminal):**
+  ```bash
+  brew install openjdk@21
+  ```
+  *(O Eclipse Temurin):* `brew install --cask temurin@21`
+* **Descarga directa:** Descarga el instalador `.pkg` oficial de [Eclipse Temurin JDK 21 para macOS](https://adoptium.net/temurin/releases/?version=21) (`aarch64` para Apple Silicon M1/M2/M3/M4 o `x64` para Intel).
+
+### 3. Cambiar la versión activa a Java 21 en la Terminal:
+* **Para la sesión actual:**
+  ```bash
+  export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+  ```
+* **Para dejarlo permanente (por defecto en Mac):**
+  ```bash
+  echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zshrc
+  source ~/.zshrc
+  ```
+
+### 4. Verificar el cambio:
+```bash
+java -version
+mvn -version
+```
+*(Debe mostrar `openjdk version "21..."` o `java version "21..."`)*.
+
+### 5. Configuración en IntelliJ IDEA (si usas IDE):
+1. Ve a **File** $\rightarrow$ **Project Structure...** (`Cmd + ;`).
+2. En la pestaña **Project**:
+   * **SDK:** Selecciona `21` (si no aparece, selecciona *Add SDK* $\rightarrow$ *Download JDK...* y elige versión 21).
+   * **Language Level:** Selecciona `21 - Records, pattern matching...`.
+3. En **Preferences / Settings** (`Cmd + ,`):
+   * Ve a **Build, Execution, Deployment** $\rightarrow$ **Build Tools** $\rightarrow$ **Maven** $\rightarrow$ **Runner**.
+   * En **JRE**, selecciona `Project SDK (21)`.
+4. Haz clic en **Apply** y ejecuta el proyecto.
+
+---
+
+## 🗄️ 4. Conexión con DBeaver
 
 | Campo en DBeaver | Valor |
 | :--- | :--- |
-| **Tipo de Base de Datos** | **PostgreSQL** |
+| **Tipo de Base de Datos** | **PostgreSQL** *(Ícono del elefante)* |
 | **Host / Servidor** | `localhost` *(o `127.0.0.1`)* |
 | **Port / Puerto** | `5432` |
 | **Database / Base de Datos** | `sica_db` |
@@ -98,7 +145,7 @@ mvn exec:java
 
 ---
 
-## 🔑 4. Tabla de Credenciales de Prueba
+## 🔑 5. Tabla de Credenciales de Prueba
 
 | Usuario | Contraseña | Rol Asignado | Capacidades Habilitadas en SICA |
 | :--- | :--- | :--- | :--- |
@@ -108,7 +155,7 @@ mvn exec:java
 
 ---
 
-## 🏛️ 5. Arquitectura Hexagonal: ¿Para Qué Sirve Cada Carpeta?
+## 🏛️ 6. Arquitectura Hexagonal: ¿Para Qué Sirve Cada Carpeta?
 
 El sistema está estructurado mediante **Arquitectura Hexagonal (Puertos y Adaptadores)** combinada con **Vertical Slice Architecture**. Cada módulo de negocio es un hexágono independiente con la siguiente anatomía:
 
@@ -204,7 +251,7 @@ src/main/java/com/gestion_de_seguridad/
 
 ---
 
-## 🧩 6. Patrones de Diseño Implementados
+## 🧩 7. Patrones de Diseño Implementados
 
 | Patrón | Ubicación en el Código | Propósito y Justificación |
 | :--- | :--- | :--- |
@@ -216,7 +263,7 @@ src/main/java/com/gestion_de_seguridad/
 
 ---
 
-## 🎯 7. Principios SOLID Aplicados
+## 🎯 8. Principios SOLID Aplicados
 
 * **S - Single Responsibility Principle (SRP)**: Cada clase tiene una única responsabilidad bien delimitada (servicios de aplicación, repositorios, validaciones).
 * **O - Open/Closed Principle (OCP)**: Nuevos tipos de ingreso pueden añadirse implementando la interfaz `EstrategiaCreacionVisita` sin modificar los servicios existentes.
@@ -226,7 +273,7 @@ src/main/java/com/gestion_de_seguridad/
 
 ---
 
-## 🗄️ 8. Modelo de Base de Datos Relacional
+## 🗄️ 9. Modelo de Base de Datos Relacional
 
 ```mermaid
 erDiagram
@@ -319,7 +366,7 @@ erDiagram
 
 ---
 
-## 📊 9. Pruebas y Verificación
+## 📊 10. Pruebas y Verificación
 
 El proyecto incluye **26 pruebas de integración automatizadas** en JUnit 5:
 
