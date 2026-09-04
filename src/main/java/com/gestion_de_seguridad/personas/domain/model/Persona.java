@@ -24,10 +24,10 @@ public class Persona {
     private Persona(Builder b) {
         this.id = b.id;
         this.dni = Validacion.dni(b.dni);
-        this.nombreCompleto = Validacion.soloLetras(b.nombreCompleto, "Nombre Completo");
-        this.puesto = b.puesto == null ? null : Validacion.soloLetras(b.puesto, "Puesto");
-        this.departamento = b.departamento == null ? null : Validacion.soloLetras(b.departamento, "Departamento");
-        this.emailCorporativo = b.emailCorporativo == null ? null
+        this.nombreCompleto = Validacion.nombre(b.nombreCompleto, "Nombre Completo");
+        this.puesto = (b.puesto == null || b.puesto.isBlank()) ? null : Validacion.textoDescriptivo(b.puesto, "Puesto");
+        this.departamento = (b.departamento == null || b.departamento.isBlank()) ? null : Validacion.textoDescriptivo(b.departamento, "Departamento");
+        this.emailCorporativo = (b.emailCorporativo == null || b.emailCorporativo.isBlank()) ? null
                 : Validacion.email(b.emailCorporativo, "Correo Corporativo");
         this.fotoUrl = b.fotoUrl;
         this.estado = b.estado == null ? EstadoPersona.ACTIVO : b.estado;

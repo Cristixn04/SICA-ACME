@@ -11,9 +11,10 @@ import java.util.regex.Pattern;
  */
 public final class Validacion {
 
-    private static final Pattern SOLO_LETRAS_ESPACIOS = Pattern.compile("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$");
+    private static final Pattern SOLO_LETRAS_ESPACIOS = Pattern.compile("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü .'-]+$");
     private static final Pattern DNI = Pattern.compile("^\\d{7,8}$");
     private static final Pattern EMAIL = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    private static final Pattern TEXTO_DESCRIPTIVO = Pattern.compile("^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñÜü .,_()/#&'-]+$");
 
     private Validacion() {
     }
@@ -56,9 +57,12 @@ public final class Validacion {
     }
 
     /**
-     * Valida un email corporativo.
+     * Valida un email corporativo o personal.
      */
     public static String email(String valor, String campo) {
+        if (valor == null || valor.trim().isEmpty()) {
+            return null;
+        }
         String normalizado = requerido(valor, campo);
         if (!EMAIL.matcher(normalizado).matches()) {
             throw new ValidacionException("El campo '" + campo + "' no tiene un formato de email valido.");
@@ -67,15 +71,40 @@ public final class Validacion {
     }
 
     /**
-     * Valida que un texto solo contenga letras y espacios (nombres, puestos, etc.).
+     * Valida nombres de personas (permite letras, acentos, espacios, puntos, apostrofes y guiones).
      */
-    public static String soloLetras(String valor, String campo) {
+    public static String nombre(String valor, String campo) {
         String normalizado = requerido(valor, campo);
         if (!SOLO_LETRAS_ESPACIOS.matcher(normalizado).matches()) {
             throw new ValidacionException(
-                    "El campo '" + campo + "' solo puede contener letras y espacios (sin numeros ni simbolos).");
+                    "El campo '" + campo + "' solo puede contener letras, acentos y espacios.");
         }
         return normalizado;
+    }
+
+    /**
+     * Valida que un texto contenga letras y espacios.
+     */
+    public static String soloLetras(String valor, String campo) {
+        return nombre(valor, campo);
+    }
+
+    /**
+     * Valida campos descriptivos (Puesto, Cargo, Empresa, Departamento, Motivo, etc.).
+     * Permite letras, numeros, acentos, espacios, guiones, parentesis y signos comunes.
+     */
+    public static String textoDescriptivo(String valor, String campo) {
+        if (valor == null || valor.trim().isEmpty()) {
+            return null;
+        }
+        String normalizado = valor.trim();
+        if (normalizado.length() > 150) {
+            throw new ValidacionException("El campo '" + campo + "' no puede superar los 150 caracteres.");
+        }
+        if (!TEXTO_DESCRIPTIVO.matcher(normalizado).matches()) {
+            throw new ValidacionException("El campo '" + campo + "' contiene caracteres no permitidos.");
+        }
+        return sinCaracteresPeligrosos(normalizado, campo);
     }
 
     /**
