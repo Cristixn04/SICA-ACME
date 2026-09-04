@@ -45,22 +45,21 @@ cd seguridad-acme
 ```
 *(O descomprimir el archivo `seguridad-acme.zip`)*.
 
-#### 2. Crear y Poblar la Base de Datos PostgreSQL
-Desde DBeaver, pgAdmin o terminal de PostgreSQL:
+#### 2. Crear y Poblar la Base de Datos PostgreSQL (Opción Más Rápida)
+Ejecuta estos 3 comandos directos en tu terminal (Linux / macOS / Windows):
 
-1. Crear la base de datos:
-   ```sql
-   CREATE DATABASE sica_db;
-   ```
-2. Ejecutar los scripts SQL incluidos en el proyecto (en este orden):
-   * **1° Estructura:** `src/main/resources/db/schema.sql` (Crea tablas, ENUMs y secuencias).
-   * **2° Datos Iniciales:** `src/main/resources/db/data.sql` (Inserta roles, permisos, usuarios `admin`, `guarda`, `funcionario` y datos demo).
+```bash
+# 1. Crear la base de datos
+psql -U postgres -c "CREATE DATABASE sica_db;"
 
-> 💡 **En terminal Linux/macOS:**
-> ```bash
-> psql -U postgres -d sica_db -f src/main/resources/db/schema.sql
-> psql -U postgres -d sica_db -f src/main/resources/db/data.sql
-> ```
+# 2. Crear las tablas, tipos ENUM y secuencias (DDL)
+psql -U postgres -d sica_db -f src/main/resources/db/schema.sql
+
+# 3. Insertar roles, permisos y usuarios de prueba (DML)
+psql -U postgres -d sica_db -f src/main/resources/db/data.sql
+```
+
+> 💡 **Nota alternativa:** Si prefieres usar interfaz gráfica (**DBeaver** o **pgAdmin**), simplemente crea la base de datos `sica_db` y ejecuta el contenido de `schema.sql` y luego `data.sql` en el editor SQL.
 
 #### 3. Configurar Credenciales *(Solo si la clave de PostgreSQL no es 'postgres')*
 El archivo `src/main/resources/application.properties` contiene los parámetros de conexión:
