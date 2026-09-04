@@ -4,8 +4,8 @@
 [![JavaFX](https://img.shields.io/badge/JavaFX-21.0.2-blue.svg)](https://openjfx.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-336791.svg)](https://www.postgresql.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.9%2B-C71A36.svg)](https://maven.apache.org/)
-[![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20%2B%20Vertical%20Slice-green.svg)](#arquitectura-del-sistema)
-[![Tests](https://img.shields.io/badge/Tests-26%2F26%20Passed-brightgreen.svg)](#pruebas-y-verificación)
+[![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20%2B%20Vertical%20Slice-green.svg)](#-2-arquitectura-del-sistema-hexagonal--vertical-slice)
+[![Tests](https://img.shields.io/badge/Tests-26%2F26%20Passed-brightgreen.svg)](#-9-pruebas-y-verificación)
 
 ---
 
@@ -14,79 +14,219 @@
 El **Sistema Integrado de Control de Acceso (SICA)** es una solución empresarial de escritorio desarrollada en **Java 21** con **JavaFX**, **PostgreSQL** y **Maven**, diseñada específicamente para la gestión de seguridad física, control de personal, contratistas y visitas dentro del complejo industrial y corporativo **Zona ACME**.
 
 ### Objetivos Principales:
-* **Control Integral de Accesos**: Registro, validación, aprobación y check-in/check-out de ingresos en puntos de control.
+* **Control Integral de Accesos**: Registro, validación, aprobación y check-in/check-out de ingresos en puntos de control y torniquetes.
 * **Seguridad Preventiva Inmediata**: Bloqueo preventivo de personas en lista negra o con incidentes abiertos, propagado instantáneamente a todos los accesos.
 * **Trazabilidad y No Repudio**: Bitácora inmutable de auditoría basada en eventos de dominio que registra cada acción, usuario y timestamp.
 * **Gestión de Contingencias y Evacuación**: Monitoreo de ocupación en tiempo real con exportación instantánea de listas de evacuación ante emergencias (CSV).
 * **Control de Acceso Basado en Roles (RBAC)**: Matriz granular de permisos almacenada en base de datos y autenticación cifrada mediante **BCrypt**.
+* **Autoservicio de Solicitud de Acceso**: Portal público en login para registro previo de visitantes externos y contratistas.
+* **Centro Interactivo de Ayuda y Soporte**: Manual de usuario según rol, directorio de emergencias Zona ACME y emisión de tickets de asistencia.
 
 ---
 
-## 🏛️ 2. Arquitectura del Sistema: Hexagonal + Vertical Slice
+## 💻 2. Guía Rápida para Clonar y Ejecutar (Máquina del Profesor / Nuevo Entorno)
 
-El sistema implementa una combinación de **Arquitectura Hexagonal (Ports & Adapters)** y **Vertical Slice Architecture**, garantizando que la lógica de negocio permanezca pura, desacoplada de la interfaz gráfica y de los mecanismos de persistencia.
+> [!IMPORTANT]
+> **No es necesario modificar ninguna línea de código Java** para ejecutar el proyecto en una máquina nueva. Solo asegúrate de tener **PostgreSQL** y **Java 21** instalados.
+
+### 📋 Prerrequisitos:
+1. **Java JDK 21** o superior instalado (`java -version`).
+2. **Apache Maven 3.8+** instalado (`mvn -version`).
+3. **PostgreSQL 14+** corriendo en `localhost:5432`.
+
+---
+
+### 🚀 Paso a Paso de Instalación:
+
+#### 1. Clonar o Descomprimir el Proyecto
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd seguridad-acme
+```
+*(O descomprimir el archivo `seguridad-acme.zip`)*.
+
+#### 2. Crear y Poblar la Base de Datos PostgreSQL
+Desde DBeaver, pgAdmin o terminal de PostgreSQL:
+
+1. Crear la base de datos:
+   ```sql
+   CREATE DATABASE sica_db;
+   ```
+2. Ejecutar los scripts SQL incluidos en el proyecto (en este orden):
+   * **1° Estructura:** `src/main/resources/db/schema.sql` (Crea tablas, ENUMs y secuencias).
+   * **2° Datos Iniciales:** `src/main/resources/db/data.sql` (Inserta roles, permisos, usuarios `admin`, `guarda`, `funcionario` y datos demo).
+
+> 💡 **En terminal Linux/macOS:**
+> ```bash
+> psql -U postgres -d sica_db -f src/main/resources/db/schema.sql
+> psql -U postgres -d sica_db -f src/main/resources/db/data.sql
+> ```
+
+#### 3. Configurar Credenciales *(Solo si la clave de PostgreSQL no es 'postgres')*
+El archivo `src/main/resources/application.properties` contiene los parámetros de conexión:
+```properties
+db.host=localhost
+db.port=5432
+db.name=sica_db
+db.user=postgres
+db.password=postgres
+```
+*Si tu servidor PostgreSQL utiliza otra contraseña (ej. `root` o `1234`), cámbiala en ese archivo o pásala como parámetro:* `mvn javafx:run -Ddb.password=tu_clave`.
+
+#### 4. Ejecutar la Aplicación
+```bash
+# Opción recomendada:
+mvn javafx:run
+
+# O usando el plugin exec:
+mvn exec:java
+```
+
+---
+
+## 🗄️ 3. Conexión con DBeaver
+
+| Campo en DBeaver | Valor |
+| :--- | :--- |
+| **Tipo de Base de Datos** | **PostgreSQL** |
+| **Host / Servidor** | `localhost` *(o `127.0.0.1`)* |
+| **Port / Puerto** | `5432` |
+| **Database / Base de Datos** | `sica_db` |
+| **Username / Usuario** | `postgres` |
+| **Password / Contraseña** | `postgres` *(o tu clave local)* |
+| **JDBC URL** | `jdbc:postgresql://localhost:5432/sica_db` |
+
+---
+
+## 🔑 4. Tabla de Credenciales de Prueba
+
+| Usuario | Contraseña | Rol Asignado | Capacidades Habilitadas en SICA |
+| :--- | :--- | :--- | :--- |
+| **`admin`** | `1234` | **ADMINISTRADOR** | Control total: Gestión de usuarios (RBAC), altas/bajas de personal, resolución de incidentes, aprobación y check-in/out, auditoría completa y exportación de evacuación. |
+| **`guarda`** | `1234` | **GUARDA** | Operación de garita: Check-in / check-out en torniquetes, registro de invitados no anunciados, pases temporales por olvido de carnet, reporte de incidentes y bloqueo preventivo. |
+| **`funcionario`**| `1234` | **FUNCIONARIO** | Gestión de área: Pre-registro de visitas programadas, aprobación/rechazo de solicitudes de acceso y **gestión/alta de personal**. |
+
+---
+
+## 🏛️ 5. Arquitectura Hexagonal: ¿Para Qué Sirve Cada Carpeta?
+
+El sistema está estructurado mediante **Arquitectura Hexagonal (Puertos y Adaptadores)** combinada con **Vertical Slice Architecture**. Cada módulo de negocio es un hexágono independiente con la siguiente anatomía:
+
+```mermaid
+graph TD
+    UI[Adaptador UI / JavaFX] -->|Invoca| PortIn[Puertos de Entrada / UseCases]
+    PortIn -->|Implementado por| Service[Servicios de Aplicación]
+    Service -->|Utiliza| Domain[Modelos y Eventos de Dominio]
+    Service -->|Invoca| PortOut[Puertos de Salida / Repositorios]
+    PortOut -->|Implementado por| AdapterOut[Adaptadores JDBC PostgreSQL]
+```
+
+### Estructura Estándar de las Carpetas en Cada Hexágono:
+
+* `📁 domain/`: **El núcleo puro del negocio**. No depende de frameworks, librerías externas, interfaces gráficas ni bases de datos.
+  * `📁 model/`: Contiene las entidades (`Visita`, `Persona`, `Usuario`), enumeradores de estado (`EstadoVisita`, `EstadoPersona`) y objetos de valor con sus invariantes y reglas de validación.
+  * `📁 event/`: Clases de eventos inmutables que representan hechos ocurridos en el negocio (`VisitaCreadaEvent`, `CheckInRealizadoEvent`, `PersonaBloqueadaEvent`).
+  * `📁 port/in/`: Interfaces que definen los **Casos de Uso** que la aplicación expone a los clientes externos (ej. `GestionarVisitaUseCase`, `AutenticarUsuarioUseCase`).
+  * `📁 port/out/`: Interfaces que definen los contratos de persistencia y servicios externos que el dominio necesita (ej. `VisitaRepositoryPort`, `PersonaRepositoryPort`).
+
+* `📁 application/`: **Capa de orquestación y casos de uso**.
+  * `📁 service/`: Implementaciones de los casos de uso (`GestionarVisitaService`, `AutenticarUsuarioService`, etc.). Coordina la verificación de permisos, las reglas de negocio, la persistencia y la publicación de eventos en el Event Bus.
+
+* `📁 infrastructure/`: **Detalles técnicos y adaptadores tecnológicos**.
+  * `📁 adapter/out/persistence/`: Implementaciones concretas de los puertos de salida que se comunican con PostgreSQL mediante JDBC (`PostgresVisitaRepository`, `PostgresPersonaRepository`, etc.).
+  * `📁 listener/`: Observadores de eventos (Patrón Observer) como `AuditoriaEventListener`, que reaccionan a eventos de dominio de forma desacoplada.
+  * `📁 config/`: Contenedores de inyección manual de dependencias y Composition Root (`AccesoContainer`, `PersonasContainer`, etc.).
+
+---
+
+### Detalle por Hexágono del Proyecto:
 
 ```
 src/main/java/com/gestion_de_seguridad/
-├── shared/                         # Kernel compartido
-│   ├── domain/                     # Eventos base, excepciones de dominio
-│   └── infrastructure/             # Pool de conexiones JDBC (Singleton) y config
-├── usuarios/                       # Vertical Slice: RBAC y Autenticación
-│   ├── domain/                     # Modelos (Usuario, Rol, Permiso), Puertos
-│   ├── application/service/        # Autenticación (BCrypt), Verificación de Permisos
-│   └── infrastructure/adapter/     # Repositorios JDBC PostgreSQL
-├── personas/                       # Vertical Slice: Gestión de Personal y Visitantes
-│   ├── domain/                     # Entidad Persona, EstadoPersona, Puertos
-│   ├── application/service/        # Validaciones de DNI, Alta, Bloqueo Inmediato
-│   └── infrastructure/adapter/     # Repositorio JDBC
-├── acceso/                         # Vertical Slice: Control de Visitas y Accesos
-│   ├── domain/                     # Máquina de Estados (State) y Estrategias (Strategy)
-│   ├── application/service/        # Check-in, Check-out, Regularización de Huérfanos
-│   └── infrastructure/adapter/     # Repositorio JDBC Transaccional
-├── incidentes/                     # Vertical Slice: Gestión de Brechas de Seguridad
-│   ├── domain/                     # Entidad Incidente, Severidad, Estado
-│   ├── application/service/        # Reporte y Bloqueo Preventivo Automático
-│   └── infrastructure/adapter/     # Repositorio JDBC
-├── auditoria/                      # Vertical Slice: Bitácora Inmutable
-│   ├── domain/                     # RegistroAuditoria, Puertos
-│   ├── application/service/        # Registro de Eventos
-│   └── infrastructure/adapter/in/  # AuditoriaEventListener (Observer Bus)
-└── ui/                             # Adaptador Primario: Interfaz Gráfica JavaFX
-    ├── Launcher.java               # Punto de entrada JavaFX
-    ├── VistaLogin.java             # Controlador FXML de Login
-    ├── VistaPrincipal.java         # Shell Principal y Navegación
-    ├── VistaCheckIn.java           # Centro de Control de Accesos
-    ├── VistaPersonas.java          # Gestión de Personal y Bloqueo
-    ├── VistaIncidentes.java        # Reporte y Seguimiento de Brechas
-    ├── VistaReportes.java          # Dashboard, Evacuación y Métricas
-    └── VistaUsuarios.java          # Gestión de Operadores y Matriz RBAC
+├── 🛡️ acceso/                         # Hexágono de Visitas, Flujos y Torniquetes
+│   ├── domain/model/                  # Visita, EstadoVisita, Estrategias de Creación (Strategy)
+│   ├── domain/event/                  # VisitaCreadaEvent, CheckInRealizadoEvent, etc.
+│   ├── domain/port/in/                # GestionarVisitaUseCase
+│   ├── domain/port/out/               # VisitaRepositoryPort
+│   ├── application/service/           # GestionarVisitaService (Transiciones y regularizaciones)
+│   ├── infrastructure/adapter/out/    # PostgresVisitaRepository
+│   └── infrastructure/config/         # AccesoContainer (Composition Root)
+│
+├── 👤 personas/                       # Hexágono de Gestión de Personal y Visitantes
+│   ├── domain/model/                  # Persona, EstadoPersona (ACTIVO, INACTIVO, LICENCIA)
+│   ├── domain/event/                  # PersonaRegistradaEvent, PersonaBloqueadaEvent
+│   ├── domain/port/in/ & port/out/    # GestionarPersonaUseCase, PersonaRepositoryPort
+│   ├── application/service/           # GestionarPersonaService (Altas, Bajas y Bloqueos)
+│   └── infrastructure/                # PostgresPersonaRepository, PersonasContainer
+│
+├── 🔐 usuarios/                       # Hexágono de Autenticación y RBAC
+│   ├── domain/model/                  # Usuario, Rol, Permiso, SesionActiva
+│   ├── domain/port/in/ & port/out/    # AutenticarUsuarioUseCase, VerificarPermisoUseCase
+│   ├── application/service/           # AutenticarUsuarioService (BCrypt), VerificarPermisoService
+│   └── infrastructure/                # PostgresUsuarioRepository, PostgresRolPermisoRepository
+│
+├── ⚠️ incidentes/                     # Hexágono de Brechas y Novedades de Seguridad
+│   ├── domain/model/                  # Incidente, EstadoIncidente, Severidad
+│   ├── domain/port/in/ & port/out/    # GestionarIncidenteUseCase, IncidenteRepositoryPort
+│   ├── application/service/           # GestionarIncidenteService
+│   └── infrastructure/                # PostgresIncidenteRepository, IncidentesContainer
+│
+├── 📜 auditoria/                      # Hexágono de Bitácora Inmutable (Observer)
+│   ├── domain/model/                  # EntradaAuditoria
+│   ├── domain/port/in/ & port/out/    # RegistrarAuditoriaUseCase, AuditoriaRepositoryPort
+│   ├── application/service/           # RegistrarAuditoriaService, ConsultarAuditoriaService
+│   ├── infrastructure/listener/       # AuditoriaEventListener (Escucha el Event Bus)
+│   └── infrastructure/adapter/out/    # PostgresAuditoriaRepository, AuditoriaContainer
+│
+├── 📊 reportes/                       # Hexágono de Métricas y Evacuación de Emergencia
+│   ├── domain/model/                  # MetricasDashboard, ItemEvacuacion
+│   ├── domain/port/in/ & port/out/    # GenerarReportesUseCase, ExportarEvacuacionCsvUseCase
+│   ├── application/service/           # GenerarReportesService, ExportarEvacuacionCsvService
+│   └── infrastructure/                # PostgresReportesRepository, ReportesContainer
+│
+├── 🌐 shared/                         # Módulo Transversal / Kernel Compartido
+│   ├── domain/event/                  # DomainEvent, EventPublisher, EventSubscriber
+│   ├── domain/Validacion.java         # Validador centralizado (DNI, Nombres, Descriptivos)
+│   └── infrastructure/                # DatabaseConfig, PostgresDataSource (Hikari/JDBC)
+│
+└── 🖥️ ui/                             # Adaptador Primario: Interfaz Gráfica JavaFX
+    ├── App.java / Launcher.java       # Arranque y configuración del Stage y ventana
+    ├── PanelPrincipal.java            # Shell principal, navegación por rol y barra superior
+    ├── VistaLogin.java                # Pantalla de Login y Portal de Solicitud de Acceso
+    ├── VistaCheckIn.java              # Control de torniquetes, check-in, check-out y visitas
+    ├── VistaPersonas.java             # Módulo de Personal y Personas (Altas y Bloqueos)
+    ├── VistaIncidentes.java           # Registro y seguimiento de incidentes de seguridad
+    ├── VistaReportes.java             # Dashboard de métricas y botón de evacuación CSV
+    ├── VistaUsuarios.java             # Administración de usuarios y matriz de permisos
+    ├── VistaAyuda.java                # Centro de ayuda, directorio ACME y tickets de soporte
+    └── UiUtils.java                   # Hilos asíncronos (enHiloFondo), avatares y estilos
 ```
 
 ---
 
-## 🧩 3. Patrones de Diseño de Software
+## 🧩 6. Patrones de Diseño Implementados
 
 | Patrón | Ubicación en el Código | Propósito y Justificación |
 | :--- | :--- | :--- |
-| **Observer** | `EventPublisher`, `DomainEvent`, `AuditoriaEventListener` | Desacoplamiento total entre slices. Los servicios emiten eventos de dominio y el slice de auditoría los captura de forma transparente sin acoplamiento directo. |
-| **State** | `EstadoVisita` (`CREADA`, `APROBADA`, `EN_CURSO`, `FINALIZADA`, `RECHAZADA`, `CERRADA_POR_SISTEMA`) | Modela las transiciones válidas del ciclo de vida de una visita. Garantiza que no se pueda hacer check-in sin aprobación previa o check-out sin check-in. |
-| **Strategy** | `EstrategiaCreacionVisita`, `PreRegistradaStrategy`, `NoAnunciadaStrategy`, `CarnetOlvidadoStrategy` | Permite encapsular y extender las políticas de registro y aprobación según el tipo de visitante (visita preagendada vs. no anunciada vs. olvido de carnet). |
-| **Builder** | `Persona.builder()`, `Visita.builder()`, `Usuario` | Facilita la construcción de entidades de dominio complejas manteniendo su inmutabilidad y validando invariantes. |
-| **Singleton** | `PostgresDataSource`, `Sesion` | Control centralizado del ciclo de vida de conexiones PostgreSQL y del estado del usuario activo en la sesión. |
+| **Observer** | `EventPublisher`, `DomainEvent`, `AuditoriaEventListener` | Desacoplamiento total entre slices. Los servicios emiten eventos de dominio y el módulo de auditoría los persiste automáticamente sin acoplar los servicios. |
+| **State** | `EstadoVisita` (`CREADA`, `APROBADA`, `DENTRO`, `FINALIZADA`, `RECHAZADA`, `CERRADA_POR_SISTEMA`) | Modela las transiciones válidas del ciclo de vida de una visita, impidiendo estados inválidos como check-in sin aprobación previa. |
+| **Strategy** | `EstrategiaCreacionVisita`, `EstrategiaVisitaPreRegistrada`, `EstrategiaVisitaNoAnunciada`, `EstrategiaVisitaPorOlvidoCarnet` | Encapsula las políticas de registro y aprobación según el tipo de visitante (visita programada vs. no anunciada vs. carnet olvidado). |
+| **Builder** | `Persona.builder()`, `Visita.builder()`, `Usuario.builder()` | Construcción limpia e inmutable de entidades complejas con validación previa de invariantes. |
+| **Singleton / Composition Root** | `PostgresDataSource`, `Sesion`, `*Container` | Gestión centralizada de conexiones PostgreSQL, sesión activa e inyección de dependencias. |
 
 ---
 
-## 🎯 4. Principios SOLID Aplicados
+## 🎯 7. Principios SOLID Aplicados
 
-* **S - Single Responsibility Principle (SRP)**: Cada caso de uso (`GestionarVisitaService`, `GestionarPersonaService`, `AuditoriaEventListener`) tiene una única responsabilidad bien delimitada.
-* **O - Open/Closed Principle (OCP)**: Nuevos tipos de ingreso pueden añadirse implementando la interfaz `EstrategiaCreacionVisita` sin modificar el servicio de acceso existente.
-* **L - Liskov Substitution Principle (LSP)**: Todos los adaptadores de salida (`VisitaJdbcRepository`, `PersonaJdbcRepository`, `UsuarioJdbcRepository`) son completamente intercambiables a través de sus puertos (`VisitaRepositoryPort`, etc.).
-* **I - Interface Segregation Principle (ISP)**: Los puertos de entrada están segregados por capacidad (`AutenticarUsuarioUseCase`, `VerificarPermisoUseCase`, `ConsultarUsuarioUseCase`) para que los clientes solo dependan de lo que realmente usan.
-* **D - Dependency Inversion Principle (DIP)**: Las capas de dominio y aplicación dependen exclusivamente de interfaces (puertos), mientras que los adaptadores de infraestructura (JDBC, JavaFX) dependen de las capas internas.
+* **S - Single Responsibility Principle (SRP)**: Cada clase tiene una única responsabilidad bien delimitada (servicios de aplicación, repositorios, validaciones).
+* **O - Open/Closed Principle (OCP)**: Nuevos tipos de ingreso pueden añadirse implementando la interfaz `EstrategiaCreacionVisita` sin modificar los servicios existentes.
+* **L - Liskov Substitution Principle (LSP)**: Todos los adaptadores de salida (`PostgresVisitaRepository`, `PostgresPersonaRepository`) son completamente sustituibles a través de sus interfaces de puerto.
+* **I - Interface Segregation Principle (ISP)**: Puertos específicos y reducidos para cada necesidad (`AutenticarUsuarioUseCase`, `VerificarPermisoUseCase`, `GestionarPersonaUseCase`).
+* **D - Dependency Inversion Principle (DIP)**: El dominio y la aplicación dependen exclusivamente de abstracciones (interfaces), nunca de implementaciones concretas de base de datos o UI.
 
 ---
 
-## 🗄️ 5. Modelo de Base de Datos Relacional (PostgreSQL)
+## 🗄️ 8. Modelo de Base de Datos Relacional
 
 ```mermaid
 erDiagram
@@ -104,8 +244,7 @@ erDiagram
     EMPRESA {
         bigserial id PK
         varchar nombre
-        varchar ruc
-        varchar direccion
+        boolean es_acme
     }
 
     PERSONA {
@@ -116,18 +255,18 @@ erDiagram
         varchar departamento
         varchar email_corporativo
         bigint empresa_id FK
-        estado_persona estado
+        varchar estado
     }
 
     ROL {
         bigserial id PK
         varchar nombre UK
-        varchar descripcion
     }
 
     PERMISO {
         bigserial id PK
         varchar codigo UK
+        varchar modulo
         varchar descripcion
     }
 
@@ -143,7 +282,6 @@ erDiagram
         bigint rol_id FK
         bigint persona_id FK
         boolean activo
-        timestamp fecha_creacion
     }
 
     VISITA {
@@ -153,11 +291,9 @@ erDiagram
         bigint empresa_propietaria_id FK
         text motivo
         timestamp fecha_hora_visita
-        estado_visita estado
+        varchar estado
         timestamp fecha_hora_ingreso
         timestamp fecha_hora_salida
-        bigint autorizada_por FK
-        boolean requiere_pase_temporal
     }
 
     INCIDENTE {
@@ -165,8 +301,8 @@ erDiagram
         bigint persona_id FK
         varchar tipo
         text descripcion
-        severidad_incidente severidad
-        estado_incidente estado
+        varchar severidad
+        varchar estado
         timestamp fecha_creacion
     }
 
@@ -183,82 +319,19 @@ erDiagram
 
 ---
 
-## 🚀 6. Guía de Instalación y Ejecución
+## 📊 9. Pruebas y Verificación
 
-### Prerrequisitos:
-1. **Java JDK 21** o superior instalado y configurado en el `PATH` (`java -version`).
-2. **Apache Maven 3.8+** instalado (`mvn -version`).
-3. **PostgreSQL 14+** en ejecución en el puerto `5432`.
+El proyecto incluye **26 pruebas de integración automatizadas** en JUnit 5:
 
-### Paso 1: Configurar la Base de Datos PostgreSQL
-Crea la base de datos `sica_db` e inicializa el esquema y los datos semilla:
-```bash
-# Crear base de datos
-createdb sica_db
-
-# Ejecutar script DDL (tablas, tipos ENUM, índices)
-psql -d sica_db -f src/main/resources/db/schema.sql
-
-# Ejecutar script DML (roles, permisos, usuarios con BCrypt, empresas y personas iniciales)
-psql -d sica_db -f src/main/resources/db/data.sql
-```
-
-> [!NOTE]
-> La configuración de conexión se encuentra en `src/main/resources/application.properties`. Por defecto utiliza `localhost:5432/sica_db` con usuario `postgres` y contraseña `postgres` (con fallbacks automáticos en entornos locales). Modifícalo según tu entorno si es necesario.
-
-### Paso 2: Compilación y Pruebas
-Ejecuta la suite de pruebas automatizadas:
 ```bash
 mvn clean test
 ```
-*Se ejecutarán las **26 pruebas de integración** validando la arquitectura hexagonal, transiciones de estado, auditoría y reglas de negocio.*
 
-### Paso 3: Ejecutar la Aplicación
-Puedes iniciar la interfaz gráfica de usuario en JavaFX con cualquiera de estas opciones:
-
-**Opción A (Plugin JavaFX):**
-```bash
-mvn javafx:run
-```
-
-**Opción B (Exec Plugin):**
-```bash
-mvn exec:java
-```
-
-**Opción C (Desde cualquier IDE):**
-Ejecuta directamente la clase principal [`com.gestion_de_seguridad.ui.Launcher`](file:///home/cristixn/.gemini/antigravity/scratch/seguridad-acme/src/main/java/com/gestion_de_seguridad/ui/Launcher.java).
-
----
-
-## 🔑 7. Tabla de Credenciales de Prueba
-
-| Usuario | Contraseña | Rol Asignado | Módulos y Capacidades Habilitadas |
-| :--- | :--- | :--- | :--- |
-| **`admin`** | `1234` | **ADMINISTRADOR** | Control total: Gestión de usuarios (RBAC), altas y bloqueo de personal, resolución de incidentes, aprobación y check-in/out, bitácora de auditoría completa, exportación de evacuación (CSV). |
-| **`guarda`** | `1234` | **GUARDA** | Operación de guardia: Registro de visitas no anunciadas y olvido de carnet, validación de check-in / check-out en torniquetes, bloqueo preventivo y reporte de incidentes. |
-| **`funcionario`**| `1234` | **FUNCIONARIO** | Autogestión: Pre-registro de visitas para sus departamentos, aprobación y rechazo de solicitudes de ingreso. |
-
----
-
-## 🚦 8. Cobertura de Flujos Operativos Críticos
-
-1. **Visita Pre-registrada**: El funcionario agenda previamente la visita (`CREADA`), la autoriza (`APROBADA`), y el guardia valida su identidad para dar ingreso (`EN_CURSO`) y salida (`FINALIZADA`).
-2. **Visitante No Anunciado**: Llega directamente al control. El guardia registra sus datos mediante la estrategia `NoAnunciadaStrategy`, requiriendo aprobación inmediata antes del check-in.
-3. **Carnet Olvidado (Pase Temporal)**: El empleado solicita ingreso temporal mediante `CarnetOlvidadoStrategy`. El sistema **regulariza atómicamente visitas previas huérfanas** (`CERRADA_POR_SISTEMA`) y genera el nuevo pase temporal en estado `APROBADA` listo para ingreso.
-4. **Bloqueo Preventivo Inmediato**: Ante una brecha de seguridad reportada en el módulo de Incidentes o Personal, el sistema bloquea inmediatamente a la persona (`INACTIVO`). Cualquier intento de ingreso subsiguiente es rechazado en el acto.
-5. **Emergencia y Evacuación**: En caso de siniestro, el módulo de Reportes permite exportar en 1 clic el archivo `CSV` con todas las personas que se encuentran dentro de las instalaciones en ese instante.
-
----
-
-## 📊 9. Pruebas y Verificación
-
-El proyecto incluye pruebas de integración con base de datos real en JUnit 5:
 * `AccesoIntegracionTest`: Ciclo completo de visitas, máquina de estados, transiciones inválidas, rechazos, y regularización atómica de pases por olvido de carnet.
 * `UsuariosIntegracionTest`: Autenticación BCrypt, control RBAC granular, permisos jerárquicos y alta de operadores.
 * `PersonasIntegracionTest`: Invariantes de DNI, unicidad, bloqueo y reactivación inmediata.
 * `IncidentesIntegracionTest`: Reporte por severidad y bloqueo preventivo sincronizado.
-* `ReportesIntegracionTest`: Agregaciones en memoria mediante Java Stream API y lista de evacuación en tiempo real.
+* `ReportesIntegracionTest`: Agregaciones analíticas y lista de evacuación en tiempo real.
 * `AuditoriaIntegracionTest`: Suscripción y registro inmutable en bitácora ante eventos de dominio.
 
 ---
