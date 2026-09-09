@@ -103,4 +103,22 @@ public class GenerarReporteService implements GenerarReporteUseCase {
                         && v.getFechaHoraVisita().toLocalDate().equals(hoy))
                 .collect(Collectors.toList());
     }
+
+    // =========================================================================
+    // [EXAMEN - FUNCION 5: Analítica de Departamento Más Frecuente con Stream API]
+    // =========================================================================
+    @Override
+    public String departamentoMasVisitado() {
+        Map<Long, Persona> personasMap = reporteRepository.todasLasPersonas().stream()
+                .collect(Collectors.toMap(Persona::getId, p -> p, (p1, p2) -> p1));
+
+        return reporteRepository.todasLasVisitas().stream()
+                .map(v -> personasMap.get(v.getPersonaId()))
+                .filter(p -> p != null && p.getDepartamento() != null && !p.getDepartamento().isBlank())
+                .collect(Collectors.groupingBy(Persona::getDepartamento, Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("Ninguno");
+    }
 }

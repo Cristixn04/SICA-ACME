@@ -110,6 +110,22 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
     public Visita registrarCheckIn(Long idGuarda, Long idVisita) {
         verificarPermiso.verificar(idGuarda, "registrar_checkin");
         Visita actual = buscarPorId(idVisita);
+
+        // =========================================================================
+        // [EXAMEN - FUNCION 6: Validación Defensiva de Bloqueo en Check-In]
+        // Verifica que la persona asociada esté ACTIVA antes de permitir el ingreso.
+        // =========================================================================
+        try {
+            var persona = com.gestion_de_seguridad.personas.infrastructure.config.PersonasContainer.gestionar().buscarPorId(actual.getPersonaId());
+            if (persona != null && persona.getEstado() != com.gestion_de_seguridad.personas.domain.model.EstadoPersona.ACTIVO) {
+                throw new com.gestion_de_seguridad.shared.domain.EstadoInvalidoException(
+                        "Acceso Denegado: La persona '" + persona.getNombreCompleto() + "' se encuentra en estado " + persona.getEstado() + ".");
+            }
+        } catch (com.gestion_de_seguridad.shared.domain.EstadoInvalidoException e) {
+            throw e;
+        } catch (Exception ignored) {
+        }
+
         Visita checkin = actual.realizarCheckIn(idGuarda);
         Visita dentro = checkin.confirmarDentro();
         visitaRepository.actualizar(dentro);
@@ -125,6 +141,30 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
         visitaRepository.actualizar(checkout);
         eventPublisher.publicar(new CheckOutRealizadoEvent(checkout.getId(), idGuarda));
         return checkout;
+    }
+
+    // =========================================================================
+    // [EXAMEN - FUNCION 2: Cancelación de Visitas]
+    // Permite anular una visita en estado CREADA, PENDIENTE o APROBADO antes del ingreso.
+    // =========================================================================
+    @Override
+    public Visita cancelar(Long idUsuario, Long idVisita) {
+        // Puede cancelar quien tenga permiso de rechazar o crear visitas
+        try {
+            verificarPermiso.verificar(idUsuario, "rechazar_visita");
+        } catch (Exception e) {
+            verificarPermiso.verificar(idUsuario, "crear_visita");
+        }
+        Visita actual = buscarPorId(idVisita);
+        if (actual.getEstado() == com.gestion_de_seguridad.acceso.domain.model.EstadoVisita.DENTRO
+                || actual.getEstado() == com.gestion_de_seguridad.acceso.domain.model.EstadoVisita.CHECK_OUT
+                || actual.getEstado() == com.gestion_de_seguridad.acceso.domain.model.EstadoVisita.CERRADA_POR_SISTEMA) {
+            throw new ValidacionException("No se puede cancelar una visita que ya ingresó o finalizó.");
+        }
+        Visita cancelada = actual.rechazar();
+        visitaRepository.actualizar(cancelada);
+        eventPublisher.publicar(new VisitaRechazadaEvent(cancelada.getId(), idUsuario));
+        return cancelada;
     }
 
     @Override

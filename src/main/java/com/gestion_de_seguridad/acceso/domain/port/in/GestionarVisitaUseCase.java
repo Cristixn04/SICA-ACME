@@ -58,4 +58,11 @@ public interface GestionarVisitaUseCase {
      * Lista todas las visitas registradas en el sistema.
      */
     List<Visita> listarTodas();
+
+    // =========================================================================
+    // [EXAMEN - FUNCION 2: Cancelación de Visitas]
+    // Permite a un funcionario o administrador cancelar una visita pendiente/programada
+    // antes de que se realice el ingreso en torniquetes.
+    // =========================================================================
+    Visita cancelar(Long idUsuario, Long idVisita);
 }

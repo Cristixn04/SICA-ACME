@@ -14,7 +14,7 @@ import java.util.Set;
 public enum EstadoVisita {
     PENDIENTE_APROBACION(Set.of("APROBADO", "RECHAZADO")),
     PENDIENTE_APROBACION_POR_OLVIDO(Set.of("APROBADO", "RECHAZADO")),
-    APROBADO(Set.of("CHECK_IN")),
+    APROBADO(Set.of("CHECK_IN", "RECHAZADO")),
     RECHAZADO(Set.of()),
     CHECK_IN(Set.of("DENTRO")),
     DENTRO(Set.of("CHECK_OUT", "CERRADA_POR_SISTEMA")),

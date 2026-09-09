@@ -124,6 +124,8 @@ public final class VistaCheckIn implements AutoCloseable {
     private Label lblEstado;
     @FXML
     private Label lblHorarios;
+    @FXML
+    private Label lblPermanencia; // [EXAMEN - FUNCION 3: Alerta Visual de Permanencia]
 
     @FXML
     private Button btnCheckin;
@@ -133,6 +135,8 @@ public final class VistaCheckIn implements AutoCloseable {
     private Button btnAprobar;
     @FXML
     private Button btnRechazar;
+    @FXML
+    private Button btnCancelar; // [EXAMEN - FUNCION 2: Botón Cancelar Visita]
 
     private final ObservableList<Visita> datosTabla = FXCollections.observableArrayList();
     private final Map<Long, Persona> cachePersonas = new HashMap<>();
@@ -198,11 +202,15 @@ public final class VistaCheckIn implements AutoCloseable {
     }
 
     private void configurarFiltros() {
+        // [EXAMEN - FUNCION 1: Opciones de Filtro Avanzado de Visitas]
         comboFiltro.getItems().setAll(
                 "Todas las Visitas",
+                "📅 Visitas de Hoy",
+                "🗓️ Visitas de los Últimos 7 Días",
                 "⏳ Pendientes de Aprobación",
                 "🏢 Personas Dentro Hoy",
-                "✓ Visitas Aprobadas"
+                "✓ Visitas Aprobadas",
+                "✕ Visitas Rechazadas / Canceladas"
         );
         comboFiltro.setValue("Todas las Visitas");
     }
@@ -296,6 +304,17 @@ public final class VistaCheckIn implements AutoCloseable {
                 "Visita rechazada.");
     }
 
+    // =========================================================================
+    // [EXAMEN - FUNCION 2: Cancelación de Visitas]
+    // Acción del botón para anular visitas antes de que ingresen.
+    // =========================================================================
+    @FXML
+    private void onCancelar() {
+        if (visitaActual == null) return;
+        ejecutarAccion(() -> acceso.cancelar(Sesion.obtener().idUsuario(), visitaActual.getId()),
+                "Visita cancelada exitosamente.");
+    }
+
     /**
      * Dialogo interactivo para el Escenario 1: Invitado Pre-registrado.
      * Solo disponible para Funcionarios y Administradores.
@@ -387,13 +406,15 @@ public final class VistaCheckIn implements AutoCloseable {
                 }
 
                 final String finalDni = dniRaw;
-                final String finalNombre = nombreRaw.isBlank() ? ("Visitante DNI " + dniRaw) : nombreRaw;
+                final String finalNombre = nombreRaw.isBlank() ? ("Visitante " + dniRaw) : nombreRaw;
                 final String finalMotivo = motivoRaw.isBlank() ? "Acceso al complejo" : motivoRaw;
                 final Persona finalAnfitrion = anfitrion;
 
                 UiUtils.enHiloFondo(() -> {
-                    Persona p = personas.buscarPorDni(finalDni);
-                    if (p == null) {
+                    Persona p;
+                    try {
+                        p = personas.buscarPorDni(finalDni);
+                    } catch (Exception notFound) {
                         p = personas.registrar(Sesion.obtener().idUsuario(), Persona.builder()
                                 .dni(finalDni)
                                 .nombreCompleto(finalNombre)
@@ -437,8 +458,21 @@ public final class VistaCheckIn implements AutoCloseable {
 
             List<Visita> lista = texto.isBlank() ? acceso.listarTodas() : acceso.buscarPorTexto(texto);
 
-            // Filtrar segun seleccion
-            if ("⏳ Pendientes de Aprobación".equals(filtro)) {
+            // =========================================================================
+            // [EXAMEN - FUNCION 1: Filtro Avanzado de Visitas con Stream API]
+            // Filtra en memoria las visitas según fecha o estado seleccionado.
+            // =========================================================================
+            if ("📅 Visitas de Hoy".equals(filtro)) {
+                LocalDate hoy = LocalDate.now();
+                lista = lista.stream()
+                        .filter(v -> v.getFechaHoraVisita() != null && v.getFechaHoraVisita().toLocalDate().isEqual(hoy))
+                        .toList();
+            } else if ("🗓️ Visitas de los Últimos 7 Días".equals(filtro)) {
+                LocalDate hace7Dias = LocalDate.now().minusDays(7);
+                lista = lista.stream()
+                        .filter(v -> v.getFechaHoraVisita() != null && !v.getFechaHoraVisita().toLocalDate().isBefore(hace7Dias))
+                        .toList();
+            } else if ("⏳ Pendientes de Aprobación".equals(filtro)) {
                 lista = lista.stream()
                         .filter(v -> v.getEstado() == EstadoVisita.PENDIENTE_APROBACION
                                 || v.getEstado() == EstadoVisita.PENDIENTE_APROBACION_POR_OLVIDO)
@@ -450,6 +484,10 @@ public final class VistaCheckIn implements AutoCloseable {
             } else if ("✓ Visitas Aprobadas".equals(filtro)) {
                 lista = lista.stream()
                         .filter(v -> v.getEstado() == EstadoVisita.APROBADO)
+                        .collect(Collectors.toList());
+            } else if ("✕ Visitas Rechazadas / Canceladas".equals(filtro)) {
+                lista = lista.stream()
+                        .filter(v -> v.getEstado() == EstadoVisita.RECHAZADO || v.getEstado() == EstadoVisita.CERRADA_POR_SISTEMA)
                         .collect(Collectors.toList());
             }
             return Map.entry(mapa, lista);
@@ -493,6 +531,27 @@ public final class VistaCheckIn implements AutoCloseable {
         String checkout = v.getFechaHoraCheckout() != null ? v.getFechaHoraCheckout().format(FORMATO_FECHA) : "—";
         lblHorarios.setText("Check-in: " + checkin + " | Check-out: " + checkout);
 
+        // =========================================================================
+        // [EXAMEN - FUNCION 3: Alerta Visual de Permanencia Excedida (> 8 horas)]
+        // Calcula la duración dentro y alerta si supera el tiempo reglamentario.
+        // =========================================================================
+        if (v.getEstado() == EstadoVisita.DENTRO && v.getFechaHoraCheckin() != null) {
+            long minutos = java.time.Duration.between(v.getFechaHoraCheckin(), LocalDateTime.now()).toMinutes();
+            long horas = minutos / 60;
+            long mins = minutos % 60;
+            if (horas >= 8) {
+                lblPermanencia.setText("🚨 ALERTA: Tiempo Excedido (" + horas + "h " + mins + "m en planta)");
+                lblPermanencia.setStyle("-fx-text-fill: #ff4757; -fx-font-weight: 900; -fx-font-size: 11px;");
+            } else {
+                lblPermanencia.setText("⏱️ Tiempo en planta: " + horas + "h " + mins + "m");
+                lblPermanencia.setStyle("-fx-text-fill: #2ed573; -fx-font-weight: 700; -fx-font-size: 11px;");
+            }
+            lblPermanencia.setVisible(true);
+        } else {
+            lblPermanencia.setText("");
+            lblPermanencia.setVisible(false);
+        }
+
         avatarSlot.getChildren().clear();
         avatarSlot.getChildren().add(UiUtils.avatar(nombre, 22));
 
@@ -511,6 +570,10 @@ public final class VistaCheckIn implements AutoCloseable {
         btnCheckout.setDisable(!(estado == EstadoVisita.DENTRO && esGuardaOAdmin));
         btnAprobar.setDisable(!(esPendiente && esFuncionarioOAdmin));
         btnRechazar.setDisable(!(esPendiente && esFuncionarioOAdmin));
+
+        // [EXAMEN - FUNCION 2: Botón Cancelar Visita]
+        boolean puedeCancelar = esFuncionarioOAdmin && (estado == EstadoVisita.PENDIENTE_APROBACION || estado == EstadoVisita.PENDIENTE_APROBACION_POR_OLVIDO || estado == EstadoVisita.APROBADO);
+        btnCancelar.setDisable(!puedeCancelar);
     }
 
     private void actualizarBadge(EstadoVisita estado) {
@@ -525,7 +588,7 @@ public final class VistaCheckIn implements AutoCloseable {
             case "DENTRO" -> "🏢 DENTRO";
             case "PENDIENTE_APROBACION" -> "⏳ PENDIENTE DE APROBACIÓN";
             case "PENDIENTE_APROBACION_POR_OLVIDO" -> "🎫 PASE TEMPORAL PENDIENTE";
-            case "RECHAZADO" -> "✕ RECHAZADO";
+            case "RECHAZADO" -> "✕ RECHAZADO / CANCELADO";
             case "CHECK_OUT" -> "SALIDA REGISTRADA";
             case "CERRADA_POR_SISTEMA" -> "⚠️ CERRADA POR SISTEMA";
             default -> estado;
@@ -548,6 +611,7 @@ public final class VistaCheckIn implements AutoCloseable {
         btnCheckout.setDisable(true);
         btnAprobar.setDisable(true);
         btnRechazar.setDisable(true);
+        btnCancelar.setDisable(true);
     }
 
     private void mostrarDetalleVacio() {
@@ -560,6 +624,8 @@ public final class VistaCheckIn implements AutoCloseable {
         lblEstado.setText("SIN SELECCIÓN");
         lblEstado.getStyleClass().removeAll("badge-verde", "badge-amarillo", "badge-rojo", "badge-azul", "badge-naranja");
         lblHorarios.setText("Check-in: — | Check-out: —");
+        lblPermanencia.setText("");
+        lblPermanencia.setVisible(false);
         avatarSlot.getChildren().clear();
         deshabilitarAcciones();
     }

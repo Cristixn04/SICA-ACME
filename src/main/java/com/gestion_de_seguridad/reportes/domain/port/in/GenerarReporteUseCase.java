@@ -55,4 +55,13 @@ public interface GenerarReporteUseCase {
      * Detalle de las visitas del dia de hoy.
      */
     List<Visita> visitasDelDiaDetalle();
+
+    // =========================================================================
+    // [EXAMEN - FUNCION 5: Analítica de Departamento Más Frecuente con Stream API]
+    // =========================================================================
+    /**
+     * Retorna el nombre del departamento con mayor cantidad de visitas registradas.
+     * Si no hay visitas registradas o no hay datos, retorna "Ninguno".
+     */
+    String departamentoMasVisitado();
 }

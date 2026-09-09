@@ -117,4 +117,34 @@ class AccesoIntegracionTest {
         assertEquals(EstadoVisita.DENTRO, dentro.getEstado());
         assertNotNull(dentro.getFechaHoraCheckin());
     }
+
+    // =========================================================================
+    // [EXAMEN - TEST FUNCION 2: Cancelación de Visita]
+    // =========================================================================
+    @Test
+    void flujoCancelarVisita() {
+        Persona persona = crearPersonaTemporal();
+        Visita visita = acceso.crearVisita(1L, AccesoContainer.preRegistrada(),
+                Visita.builder().personaId(persona.getId()).motivo("Reunión que se cancelará").build());
+        assertEquals(EstadoVisita.APROBADO, visita.getEstado());
+
+        Visita cancelada = acceso.cancelar(1L, visita.getId());
+        assertEquals(EstadoVisita.RECHAZADO, cancelada.getEstado());
+    }
+
+    // =========================================================================
+    // [EXAMEN - TEST FUNCION 6: Validación Defensiva de CheckIn con Persona Inactiva]
+    // =========================================================================
+    @Test
+    void checkInPersonaBloqueadaDebeFallar() {
+        Persona persona = crearPersonaTemporal();
+        Visita visita = acceso.crearVisita(1L, AccesoContainer.preRegistrada(),
+                Visita.builder().personaId(persona.getId()).motivo("Intento con persona inactiva").build());
+
+        // Bloqueamos la persona
+        personas.bloquear(1L, persona.getId());
+
+        // El check-in debe ser rechazado
+        assertThrows(EstadoInvalidoException.class, () -> acceso.registrarCheckIn(2L, visita.getId()));
+    }
 }

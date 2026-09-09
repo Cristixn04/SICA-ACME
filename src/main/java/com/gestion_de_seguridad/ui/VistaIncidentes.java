@@ -63,6 +63,44 @@ public final class VistaIncidentes {
         reportarIncidente();
     }
 
+    // =========================================================================
+    // [EXAMEN - FUNCION 4: Exportar Incidentes a CSV con Stream API y Files NIO]
+    // =========================================================================
+    @FXML
+    private void onExportarCsv() {
+        UiUtils.enHiloFondo(() -> {
+            List<Incidente> lista = incidentes.listar();
+            if (lista.isEmpty()) {
+                throw new IllegalStateException("No hay incidentes registrados para exportar.");
+            }
+
+            StringBuilder csv = new StringBuilder();
+            csv.append("ID,Tipo,Severidad,Estado,PersonaID,Descripcion\n");
+
+            // Uso de Stream API para transformar los incidentes en lineas CSV
+            lista.stream().forEach(inc -> {
+                String descLimpia = inc.getDescripcion() != null ? inc.getDescripcion().replace("\"", "\"\"").replace("\n", " ") : "";
+                csv.append(inc.getId()).append(",")
+                   .append("\"").append(inc.getTipo() != null ? inc.getTipo() : "").append("\",")
+                   .append(inc.getSeveridad() != null ? inc.getSeveridad().name() : "").append(",")
+                   .append(inc.getEstado() != null ? inc.getEstado().name() : "").append(",")
+                   .append(inc.getPersonaId() != null ? inc.getPersonaId() : "").append(",")
+                   .append("\"").append(descLimpia).append("\"\n");
+            });
+
+            String nombreArchivo = "incidentes_exportados.csv";
+            java.nio.file.Path ruta = java.nio.file.Paths.get(System.getProperty("user.home"), nombreArchivo);
+            java.nio.file.Files.writeString(ruta, csv.toString(), java.nio.charset.StandardCharsets.UTF_8);
+            return ruta.toAbsolutePath().toString();
+        }, rutaArchivo -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Exportación Exitosa");
+            alert.setHeaderText("Incidentes exportados correctamente");
+            alert.setContentText("El archivo CSV ha sido generado en:\n" + rutaArchivo);
+            alert.show();
+        }, this::mostrarError);
+    }
+
     private void recargar() {
         UiUtils.enHiloFondo(() -> {
             List<Incidente> lista = incidentes.listar();

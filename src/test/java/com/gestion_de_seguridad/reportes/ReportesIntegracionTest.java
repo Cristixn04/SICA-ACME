@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -75,5 +76,15 @@ class ReportesIntegracionTest {
     void tasaAprobacionEstaEntreCeroYUno() {
         double tasa = reportes.tasaAprobacion();
         assertTrue(tasa >= 0.0 && tasa <= 1.0);
+    }
+
+    // =========================================================================
+    // [EXAMEN - TEST FUNCION 5: Analítica de Departamento Más Visitado]
+    // =========================================================================
+    @Test
+    void departamentoMasVisitadoRetornaValorValido() {
+        String depto = reportes.departamentoMasVisitado();
+        assertNotNull(depto);
+        assertTrue(!depto.isBlank());
     }
 }

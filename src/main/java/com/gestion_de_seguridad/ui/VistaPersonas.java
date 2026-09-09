@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -33,6 +34,11 @@ public final class VistaPersonas {
     private VBox raiz;
     @FXML
     private TextField buscador;
+    // =========================================================================
+    // [EXAMEN - FUNCION 1: Filtro de Personas por Departamento]
+    // =========================================================================
+    @FXML
+    private ComboBox<String> comboDepto;
     @FXML
     private TableView<Persona> tabla;
     @FXML
@@ -90,7 +96,32 @@ public final class VistaPersonas {
                 setGraphic(badge);
             }
         });
+        // =========================================================================
+        // [EXAMEN - FUNCION 1: Filtro de Personas por Departamento con Stream API]
+        // =========================================================================
+        if (comboDepto != null) {
+            comboDepto.getItems().addAll(
+                    "Todos los Departamentos",
+                    "Seguridad",
+                    "TI",
+                    "Marketing",
+                    "Finanzas",
+                    "RRHH",
+                    "Operaciones",
+                    "Externo"
+            );
+            comboDepto.getSelectionModel().selectFirst();
+        }
+
         cargar("");
+    }
+
+    // =========================================================================
+    // [EXAMEN - FUNCION 1: Manejador de evento al cambiar departamento]
+    // =========================================================================
+    @FXML
+    private void onFiltroDeptoCambiado() {
+        cargar(buscador.getText());
     }
 
     @FXML
@@ -101,6 +132,9 @@ public final class VistaPersonas {
     @FXML
     private void onLimpiar() {
         buscador.clear();
+        if (comboDepto != null) {
+            comboDepto.getSelectionModel().selectFirst();
+        }
         cargar("");
     }
 
@@ -145,8 +179,22 @@ public final class VistaPersonas {
 
     private void cargar(String texto) {
         String criterio = texto == null ? "" : texto.trim();
+        String deptoSeleccionado = comboDepto != null ? comboDepto.getValue() : "Todos los Departamentos";
+
         UiUtils.enHiloFondo(
-                () -> criterio.isBlank() ? personas.listarTodas() : personas.buscar(criterio),
+                () -> {
+                    List<Persona> base = criterio.isBlank() ? personas.listarTodas() : personas.buscar(criterio);
+
+                    // =========================================================================
+                    // [EXAMEN - FUNCION 1: Filtrado en memoria con Java Stream API]
+                    // =========================================================================
+                    if (deptoSeleccionado != null && !deptoSeleccionado.equals("Todos los Departamentos")) {
+                        return base.stream()
+                                .filter(p -> p.getDepartamento() != null && p.getDepartamento().equalsIgnoreCase(deptoSeleccionado))
+                                .toList();
+                    }
+                    return base;
+                },
                 lista -> tabla.getItems().setAll(lista),
                 ex -> {
                     tabla.getItems().clear();

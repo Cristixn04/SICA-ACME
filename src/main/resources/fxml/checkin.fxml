@@ -86,6 +86,8 @@
             <VBox spacing="4">
                 <Label styleClass="info-campo" text="Horarios de Ingreso / Salida:"/>
                 <Label fx:id="lblHorarios" styleClass="info-valor" text="Check-in: — | Check-out: —" wrapText="true"/>
+                <!-- [EXAMEN - FUNCION 3: Alerta Visual de Permanencia Excedida] -->
+                <Label fx:id="lblPermanencia" styleClass="info-valor" text="" wrapText="true"/>
             </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>
@@ -99,6 +101,8 @@
                 <HBox spacing="8">
                     <Button fx:id="btnAprobar" styleClass="btn-verde" text="✓ Aprobar" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onAprobar"/>
                     <Button fx:id="btnRechazar" styleClass="btn-rojo" text="✕ Rechazar" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onRechazar"/>
+                    <!-- [EXAMEN - FUNCION 2: Botón Cancelar Visita] -->
+                    <Button fx:id="btnCancelar" styleClass="btn-gris" text="🚫 Cancelar" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onCancelar"/>
                 </HBox>
             </VBox>
         </VBox>
