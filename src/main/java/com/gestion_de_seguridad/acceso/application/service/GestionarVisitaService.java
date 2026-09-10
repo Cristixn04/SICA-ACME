@@ -111,10 +111,7 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
         verificarPermiso.verificar(idGuarda, "registrar_checkin");
         Visita actual = buscarPorId(idVisita);
 
-        // =========================================================================
-        // [EXAMEN - FUNCION 6: Validación Defensiva de Bloqueo en Check-In]
-        // Verifica que la persona asociada esté ACTIVA antes de permitir el ingreso.
-        // =========================================================================
+        
         try {
             var persona = com.gestion_de_seguridad.personas.infrastructure.config.PersonasContainer.gestionar().buscarPorId(actual.getPersonaId());
             if (persona != null && persona.getEstado() != com.gestion_de_seguridad.personas.domain.model.EstadoPersona.ACTIVO) {
@@ -143,10 +140,7 @@ public class GestionarVisitaService implements GestionarVisitaUseCase {
         return checkout;
     }
 
-    // =========================================================================
-    // [EXAMEN - FUNCION 2: Cancelación de Visitas]
-    // Permite anular una visita en estado CREADA, PENDIENTE o APROBADO antes del ingreso.
-    // =========================================================================
+    
     @Override
     public Visita cancelar(Long idUsuario, Long idVisita) {
         // Puede cancelar quien tenga permiso de rechazar o crear visitas

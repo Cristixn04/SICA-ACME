@@ -63,9 +63,7 @@ public final class VistaIncidentes {
         reportarIncidente();
     }
 
-    // =========================================================================
-    // [EXAMEN - FUNCION 4: Exportar Incidentes a CSV con Stream API y Files NIO]
-    // =========================================================================
+    
     @FXML
     private void onExportarCsv() {
         UiUtils.enHiloFondo(() -> {

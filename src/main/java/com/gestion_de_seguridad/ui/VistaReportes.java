@@ -82,9 +82,7 @@ public final class VistaReportes {
 
     private List<Persona> listaDentroActual = List.of();
 
-    // =========================================================================
-    // [EXAMEN - FUNCION 5: DTO de Métricas con Analítica de Departamento]
-    // =========================================================================
+    
     private record ListaMetricas(
             long personasEnComplejo,
             long visitasDelDia,
@@ -210,9 +208,7 @@ public final class VistaReportes {
                 String.valueOf(m.incidentesAbiertos()), "metrica-valor-rojo"));
         metricas.getChildren().add(tarjetaMetrica("Tasa de Aprobación",
                 String.format("%.0f%%", m.tasaAprobacion() * 100), "metrica-valor"));
-        // =========================================================================
-        // [EXAMEN - FUNCION 5: Tarjeta Analítica en Dashboard con Stream API]
-        // =========================================================================
+        
         metricas.getChildren().add(tarjetaMetrica("Depto. Más Visitado",
                 m.deptoMasVisitado(), "metrica-valor"));
 
